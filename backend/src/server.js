@@ -1,66 +1,69 @@
 /**
- * PROJECT-X — Main Server Entry Point
- *
- * Architecture: Express.js with modular middleware stack, Socket.io for
- * real-time features, and graceful shutdown handling.
- *
- * Scalability: Cluster-ready (PM2), stateless JWT auth, Redis session store.
+ * PROJECT-X — Express App Configuration
  */
 
 require('dotenv').config();
 require('express-async-errors');
 
-const http = require('http');
-const app = require('./app');
-const { connectDB } = require('./config/database');
-const { connectRedis } = require('./config/redis');
-const { initSocket } = require('./socket');
+const express = require('express');
+const cors = require('cors');
+const morgan = require('morgan');
+const cookieParser = require('cookie-parser');
+
 const logger = require('./utils/logger');
 
-const PORT = process.env.PORT || 5000;
+// ── Middleware Imports ─────────────────────────────
+const { notFound, errorHandler } = require('./middleware/errorHandler');
 
-async function startServer() {
-  try {
-    // Connect to MongoDB
-    await connectDB();
-    logger.info('✅ MongoDB connected');
+// ── Route Imports ─────────────────────────────────
+const authRoutes = require('./routes/auth.routes');
+const productRoutes = require('./routes/product.routes');
+const orderRoutes = require('./routes/order.routes');
 
-    // Connect to Redis (optional caching layer)
-    await connectRedis();
-    logger.info('✅ Redis connected');
+// ── Initialize App ────────────────────────────────
+const app = express();
 
-    // Create HTTP server and attach Socket.io
-    const server = http.createServer(app);
-    initSocket(server);
-    logger.info('✅ Socket.io initialized');
+// ── Core Middleware ───────────────────────────────
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
-    server.listen(PORT, () => {
-      logger.info(`🚀 PROJECT-X server running on port ${PORT} [${process.env.NODE_ENV}]`);
-    });
+// ── CORS Configuration ────────────────────────────
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL || '*',
+    credentials: true,
+  })
+);
 
-    // ── Graceful Shutdown ──────────────────────────────
-    const shutdown = async (signal) => {
-      logger.info(`${signal} received — shutting down gracefully...`);
-      server.close(async () => {
-        const mongoose = require('mongoose');
-        await mongoose.connection.close();
-        logger.info('MongoDB connection closed');
-        process.exit(0);
-      });
-    };
+// ── HTTP Request Logger ───────────────────────────
+app.use(
+  morgan('dev', {
+    stream: {
+      write: (message) => logger.info(message.trim()),
+    },
+  })
+);
 
-    process.on('SIGTERM', () => shutdown('SIGTERM'));
-    process.on('SIGINT', () => shutdown('SIGINT'));
+// ── Health Check Route ────────────────────────────
+app.get('/', (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: 'PROJECT-X Backend Running Successfully 🚀',
+    environment: process.env.NODE_ENV,
+  });
+});
 
-    // Handle unhandled promise rejections (prevent crash)
-    process.on('unhandledRejection', (reason, promise) => {
-      logger.error('Unhandled Rejection at:', promise, 'reason:', reason);
-    });
+// ── API Routes ────────────────────────────────────
+app.use('/api/auth', authRoutes);
+app.use('/api/products', productRoutes);
+app.use('/api/orders', orderRoutes);
 
-  } catch (err) {
-    logger.error('Failed to start server:', err);
-    process.exit(1);
-  }
-}
+// ── 404 Handler ───────────────────────────────────
+app.use(notFound);
 
-startServer();
+// ── Global Error Handler ──────────────────────────
+app.use(errorHandler);
+
+// ── Export App ────────────────────────────────────
+module.exports = app;
