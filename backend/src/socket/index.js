@@ -9,7 +9,7 @@ let io = null;
 const initSocket = (server) => {
   io = new Server(server, {
     cors: {
-      origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+      origin: process.env.FRONTEND_URL || 'https://cartex-dhy4.onrender.com',
       credentials: true,
     },
   });
