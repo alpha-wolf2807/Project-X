@@ -288,7 +288,7 @@ pm2 save
 # Nginx reverse proxy
 sudo apt install nginx
 sudo nano /etc/nginx/sites-available/projectx
-# Add: proxy_pass http://localhost:5000
+# Add: proxy_pass import.meta.env.VITE_API_URL
 sudo nginx -t && sudo systemctl reload nginx
 ```
 
@@ -330,13 +330,13 @@ cd backend
 npm test
 
 # API testing with curl
-curl -X POST http://localhost:5000/api/v1/auth/login \
+curl -X POST import.meta.env.VITE_API_URL/api/v1/auth/login \
   -H "Content-Type: application/json" \
   -d '{"email":"admin@projectx.com","password":"Admin@1234"}'
 
 # Load testing (install artillery)
 npm install -g artillery
-artillery quick --count 50 -n 10 http://localhost:5000/api/v1/health
+artillery quick --count 50 -n 10 import.meta.env.VITE_API_URL/api/v1/health
 ```
 
 ---
