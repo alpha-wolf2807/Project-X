@@ -1,69 +1,67 @@
-/**
- * PROJECT-X — Express App Configuration
- */
-
 require('dotenv').config();
 require('express-async-errors');
 
-const express = require('express');
-const cors = require('cors');
-const morgan = require('morgan');
-const cookieParser = require('cookie-parser');
+const http = require('http');
+
+const app = require('./app');
+
+const { connectDB } = require('./config/database');
+const { connectRedis } = require('./config/redis');
+
+const { initSocket } = require('./socket');
 
 const logger = require('./utils/logger');
 
-// ── Middleware Imports ─────────────────────────────
-const { notFound, errorHandler } = require('./middleware/errorHandler');
+const PORT = process.env.PORT || 5000;
 
-// ── Route Imports ─────────────────────────────────
-const authRoutes = require('./routes/auth.routes');
-const productRoutes = require('./routes/product.routes');
-const orderRoutes = require('./routes/order.routes');
+async function startServer() {
+  try {
+    console.log('STEP 1 → Starting server');
 
-// ── Initialize App ────────────────────────────────
-const app = express();
+    // MongoDB
+    console.log('STEP 2 → Connecting MongoDB');
+    await connectDB();
+    console.log('✅ MongoDB connected');
 
-// ── Core Middleware ───────────────────────────────
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser());
+    // Redis
+    console.log('STEP 3 → Connecting Redis');
+    await connectRedis();
+    console.log('✅ Redis step completed');
 
-// ── CORS Configuration ────────────────────────────
-app.use(
-  cors({
-    origin: process.env.FRONTEND_URL || '*',
-    credentials: true,
-  })
-);
+    // Create Server
+    console.log('STEP 4 → Creating HTTP server');
+    const server = http.createServer(app);
 
-// ── HTTP Request Logger ───────────────────────────
-app.use(
-  morgan('dev', {
-    stream: {
-      write: (message) => logger.info(message.trim()),
-    },
-  })
-);
+    // Socket.io
+    console.log('STEP 5 → Initializing Socket');
+    initSocket(server);
+    console.log('✅ Socket initialized');
 
-// ── Health Check Route ────────────────────────────
-app.get('/', (req, res) => {
-  res.status(200).json({
-    success: true,
-    message: 'PROJECT-X Backend Running Successfully 🚀',
-    environment: process.env.NODE_ENV,
-  });
-});
+    // Listen
+    console.log('STEP 6 → Starting listener');
 
-// ── API Routes ────────────────────────────────────
-app.use('/api/auth', authRoutes);
-app.use('/api/products', productRoutes);
-app.use('/api/orders', orderRoutes);
+    server.listen(PORT, () => {
+      console.log(`🚀 Server running on port ${PORT}`);
+    });
 
-// ── 404 Handler ───────────────────────────────────
-app.use(notFound);
+    process.on('SIGTERM', () => {
+      console.log('SIGTERM received');
+      process.exit(0);
+    });
 
-// ── Global Error Handler ──────────────────────────
-app.use(errorHandler);
+    process.on('SIGINT', () => {
+      console.log('SIGINT received');
+      process.exit(0);
+    });
 
-// ── Export App ────────────────────────────────────
-module.exports = app;
+    process.on('unhandledRejection', (err) => {
+      console.error('UNHANDLED REJECTION:', err);
+    });
+
+  } catch (err) {
+    console.error('SERVER START FAILED:', err);
+    process.exit(1);
+  }
+}
+
+startServer();
