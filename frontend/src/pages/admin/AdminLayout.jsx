@@ -18,7 +18,7 @@ import {
   Menu, X, Shield
 } from 'lucide-react';
 import { useAuthStore } from '@store/authStore';
-import { useNotifStore } from '@store/index';
+import { useUIStore, useNotifStore } from '@store/index';
 import { Avatar, Badge } from '@components/common/GlobalLoader';
 import { cn } from '@components/common/GlobalLoader';
 

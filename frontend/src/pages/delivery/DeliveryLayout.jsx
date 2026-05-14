@@ -16,7 +16,7 @@ import { deliveryApi, ordersApi } from '@services/api';
 import { updateDeliveryLocation } from '@services/socket';
 import { useSocketEvent, useCountUp } from '@hooks/index';
 import { useAuthStore } from '@store/authStore';
-import { useNotifStore } from '@store/index';
+import { useUIStore, useNotifStore } from '@store/index';
 import { Button, Badge, Avatar, OrderStatusBadge, Modal, StatCard, EmptyState, ProgressBar } from '@components/common/GlobalLoader';
 import { cn } from '@components/common/GlobalLoader';
 

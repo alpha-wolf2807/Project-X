@@ -15,7 +15,7 @@ import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { complaintsApi } from '@services/api';
 import { useAuthStore } from '@store/authStore';
-import { useNotifStore } from '@store/index';
+import { useUIStore, useNotifStore } from '@store/index';
 import { Button, Badge, Avatar, StatCard, EmptyState, Divider } from '@components/common/GlobalLoader';
 import { cn } from '@components/common/GlobalLoader';
 
