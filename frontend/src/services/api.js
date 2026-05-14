@@ -13,7 +13,9 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 import { useAuthStore } from '@store/authStore';
 
-const BASE_URL = import.meta.env.VITE_API_URL || 'import.meta.env.VITE_API_URL/api/v1';
+const rawApiUrl = import.meta.env.VITE_API_URL || 'https://project-x-j9go.onrender.com';
+const normalizedApiUrl = rawApiUrl.replace(/\/$/, '').replace(/\/api\/v1$/, '');
+const BASE_URL = `${normalizedApiUrl}/api/v1`;
 
 const api = axios.create({
   baseURL: BASE_URL,
