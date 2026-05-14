@@ -8,10 +8,11 @@
 import { Suspense, lazy, useEffect } from 'react';
 import { Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import { useAuthStore } from '@store/authStore';
-import { connectSocket } from '@services/socket';
-import { useSocketEvent } from '@hooks/index';
-import { useNotifStore } from '@store/index';
+import { authApi } from '@services/api';
+import { connectSocket, getSocket } from '@services/socket';
+import { useNotifStore, useUIStore } from '@store/index';
 import GlobalLoader from '@components/common/GlobalLoader';
+import NotificationDrawer from '@components/common/NotificationDrawer';
 
 // ── Lazy-load portals (code splitting) ────────────────────────
 // Auth
@@ -103,16 +104,40 @@ const PublicRoute = () => {
 
 // ── Socket Notification Setup ─────────────────────────────────
 const SocketSetup = () => {
-  const { isAuthenticated } = useAuthStore();
+  const { isAuthenticated, accessToken, setAccessToken, logout } = useAuthStore();
   const { addNotification } = useNotifStore();
 
   useEffect(() => {
-    if (isAuthenticated) connectSocket();
-  }, [isAuthenticated]);
+    let active = true;
 
-  useSocketEvent('notification:new', (notif) => {
-    addNotification(notif);
-  });
+    const initializeSocket = async () => {
+      if (!isAuthenticated) return;
+
+      if (!accessToken) {
+        try {
+          const response = await authApi.refreshToken();
+          if (response?.data?.accessToken) {
+            setAccessToken(response.data.accessToken);
+          }
+        } catch (err) {
+          if (active) logout();
+          return;
+        }
+      }
+
+      const socket = connectSocket();
+      if (!socket) return;
+      socket.on('notification:new', addNotification);
+    };
+
+    initializeSocket();
+
+    return () => {
+      active = false;
+      const socket = getSocket();
+      if (socket) socket.off('notification:new', addNotification);
+    };
+  }, [isAuthenticated, accessToken, addNotification, setAccessToken, logout]);
 
   return null;
 };
@@ -122,6 +147,7 @@ export default function App() {
   return (
     <>
       <SocketSetup />
+      <NotificationDrawer />
       <Suspense fallback={<GlobalLoader />}>
         <Routes>
           {/* ── Public Auth Routes ─────────────────────────── */}

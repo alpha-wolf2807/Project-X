@@ -18,6 +18,7 @@ const createNotification = async ({ recipient, type, title, body, data, channel 
 
     // Push via Socket.io (real-time in-app notification)
     notifyUser(recipient.toString(), 'notification:new', {
+      _id: notification._id,
       id: notification._id,
       type,
       title,

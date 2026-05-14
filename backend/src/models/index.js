@@ -37,11 +37,12 @@ const zoneSchema = new mongoose.Schema({
   code: { type: String, required: true, unique: true, uppercase: true },
   description: String,
   hostels: [{ type: String }], // Hostel names in this zone
-  localities: [{ type: String }], // District/locality names for location routing
+  districts: [{ type: String }], // District names for location routing
+  localities: [{ type: String }], // Locality/area names for location routing
   boundaries: {
-  type: Object,
-  default: null
-},
+    type: Object,
+    default: null,
+  },
   isActive: { type: Boolean, default: true },
   distributor: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   deliveryDudes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
@@ -52,6 +53,8 @@ const zoneSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 zoneSchema.index({ boundaries: '2dsphere' });
+zoneSchema.index({ districts: 1 });
+zoneSchema.index({ localities: 1 });
 
 const Zone = mongoose.model('Zone', zoneSchema);
 

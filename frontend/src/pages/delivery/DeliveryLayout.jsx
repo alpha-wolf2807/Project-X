@@ -16,6 +16,7 @@ import { deliveryApi, ordersApi } from '@services/api';
 import { updateDeliveryLocation } from '@services/socket';
 import { useSocketEvent, useCountUp } from '@hooks/index';
 import { useAuthStore } from '@store/authStore';
+import { useNotifStore } from '@store/index';
 import { Button, Badge, Avatar, OrderStatusBadge, Modal, StatCard, EmptyState, ProgressBar } from '@components/common/GlobalLoader';
 import { cn } from '@components/common/GlobalLoader';
 
@@ -29,6 +30,8 @@ const delivNavItems = [
 // ── Delivery Layout ────────────────────────────────────────────
 export function DeliveryLayout() {
   const { user, logout } = useAuthStore();
+  const { toggleNotifPanel } = useUIStore();
+  const { unreadCount } = useNotifStore();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -97,8 +100,13 @@ export function DeliveryLayout() {
       <div className="flex-1 flex flex-col overflow-hidden">
         <header className="h-16 flex items-center px-6 border-b border-white/10 bg-surface-1 gap-4 flex-shrink-0">
           <p className="text-white font-bold flex-1">Delivery Portal</p>
-          <button className="btn-ghost p-2 relative">
+          <button onClick={toggleNotifPanel} className="btn-ghost p-2 relative">
             <Bell className="w-5 h-5" />
+            {unreadCount > 0 && (
+              <span className="absolute top-0.5 right-0.5 w-4 h-4 bg-accent-red text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                {unreadCount > 9 ? '9+' : unreadCount}
+              </span>
+            )}
           </button>
           <Avatar src={user?.avatar?.url} name={user?.name} size="sm" />
         </header>

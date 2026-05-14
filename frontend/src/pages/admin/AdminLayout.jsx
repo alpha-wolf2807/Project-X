@@ -18,6 +18,7 @@ import {
   Menu, X, Shield
 } from 'lucide-react';
 import { useAuthStore } from '@store/authStore';
+import { useNotifStore } from '@store/index';
 import { Avatar, Badge } from '@components/common/GlobalLoader';
 import { cn } from '@components/common/GlobalLoader';
 
@@ -40,6 +41,9 @@ export default function AdminLayout() {
   const { user, logout } = useAuthStore();
   const location = useLocation();
   const navigate = useNavigate();
+
+  const { toggleNotifPanel } = useUIStore();
+  const { unreadCount } = useNotifStore();
 
   const handleLogout = () => {
     logout();
@@ -157,8 +161,13 @@ export default function AdminLayout() {
             <Menu className="w-5 h-5" />
           </button>
           <div className="flex-1" />
-          <button className="btn-ghost p-2 relative">
+          <button onClick={toggleNotifPanel} className="btn-ghost p-2 relative">
             <Bell className="w-5 h-5" />
+            {unreadCount > 0 && (
+              <span className="absolute top-0.5 right-0.5 w-4 h-4 bg-accent-red text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                {unreadCount > 9 ? '9+' : unreadCount}
+              </span>
+            )}
           </button>
           <div className="flex items-center gap-2">
             <Avatar src={user?.avatar?.url} name={user?.name} size="sm" />

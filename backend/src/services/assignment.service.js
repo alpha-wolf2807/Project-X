@@ -14,22 +14,33 @@ const { notifyUser } = require('../socket');
 const { createNotification } = require('./notification.service');
 const logger = require('../utils/logger');
 
+const escapeRegex = (value) => String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+const buildExactMatchRegex = (value) => {
+  const normalized = escapeRegex(String(value || '').trim()).replace(/\\\./g, '.?');
+  return new RegExp(`^${normalized}$`, 'i');
+};
+
 /**
  * Auto-assign distributor and schedule delivery dude
  */
 const autoAssignDelivery = async (order) => {
   try {
     const hostelName = order.deliveryAddress.hostelName;
-  const locality = order.deliveryAddress.locality;
-  const district = order.deliveryAddress.district;
+    const locality = order.deliveryAddress.locality;
+    const district = order.deliveryAddress.district;
 
-  // 1. Find zone for this hostel or district/locality
-  const zone = await Zone.findOne({ hostels: hostelName, isActive: true })
-    || await Zone.findOne({ localities: locality, isActive: true })
-    || await Zone.findOne({ name: new RegExp(`^${district}$`, 'i'), isActive: true });
+    const conditions = [];
+    if (hostelName) conditions.push({ hostels: { $regex: buildExactMatchRegex(hostelName) } });
+    if (locality) conditions.push({ localities: { $regex: buildExactMatchRegex(locality) } });
+    if (district) conditions.push({ districts: { $regex: buildExactMatchRegex(district) } });
 
-  if (!zone) {
-    logger.warn(`No zone found for hostel/locality/district: ${hostelName || locality || district}`);
+    const zone = conditions.length
+      ? await Zone.findOne({ isActive: true, $or: conditions })
+      : null;
+
+    if (!zone) {
+      logger.warn(`No zone found for hostel/locality/district: ${hostelName || locality || district}`);
+      return;
     }
 
     // 2. Assign distributor for the zone

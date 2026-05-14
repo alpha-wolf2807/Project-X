@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { LayoutDashboard, ShoppingBag, Users, Package, LogOut, Bell, TrendingUp, Clock, CheckCircle, AlertCircle, UserCog, MapPin, RefreshCw } from 'lucide-react';
+import { useUIStore, useNotifStore } from '@store/index';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
@@ -24,6 +25,8 @@ const distNavItems = [
 // ── Distributor Layout ─────────────────────────────────────────
 export function DistributorLayout() {
   const { user, logout } = useAuthStore();
+  const { toggleNotifPanel } = useUIStore();
+  const { unreadCount } = useNotifStore();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -60,7 +63,14 @@ export function DistributorLayout() {
       <div className="flex-1 flex flex-col overflow-hidden">
         <header className="h-16 flex items-center px-6 border-b border-white/10 bg-surface-1 gap-4">
           <p className="text-white font-bold flex-1">Distributor Portal</p>
-          <button className="btn-ghost p-2"><Bell className="w-5 h-5" /></button>
+          <button onClick={toggleNotifPanel} className="btn-ghost p-2 relative">
+            <Bell className="w-5 h-5" />
+            {unreadCount > 0 && (
+              <span className="absolute top-0.5 right-0.5 w-4 h-4 bg-accent-red text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                {unreadCount > 9 ? '9+' : unreadCount}
+              </span>
+            )}
+          </button>
           <Avatar src={user?.avatar?.url} name={user?.name} size="sm" />
         </header>
         <main className="flex-1 overflow-y-auto p-6"><Outlet /></main>

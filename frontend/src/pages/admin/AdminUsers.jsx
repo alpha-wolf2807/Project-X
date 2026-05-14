@@ -817,7 +817,8 @@ export function AdminZones() {
   const createMutation = useMutation({
     mutationFn: (d) => zonesApi.create({
       ...d,
-      hostels: d.hostels.split(',').map(h => h.trim()).filter(Boolean),
+      hostels: d.hostels.split(',').map((h) => h.trim()).filter(Boolean),
+      districts: d.districts?.split(',').map((district) => district.trim()).filter(Boolean) || [],
       localities: d.localities?.split(',').map((l) => l.trim()).filter(Boolean) || [],
     }),
     onSuccess: () => { queryClient.invalidateQueries(['zones']); toast.success('Zone created!'); setShowForm(false); reset(); },
@@ -847,6 +848,7 @@ export function AdminZones() {
             <Input label="Zone Code *" placeholder="NC" {...register('code', { required: true })} />
           </div>
           <Input label="Hostels (comma-separated) *" placeholder="Boys Hostel A, Girls Hostel B, PG Block" {...register('hostels', { required: true })} />
+          <Input label="Districts (comma-separated)" placeholder="Chennai, Coimbatore" {...register('districts')} hint="Used for district-based automatic assignment" />
           <Input label="Localities / Areas (comma-separated)" placeholder="T. Nagar, Mylapore, Velachery" {...register('localities')} hint="Used for district/locality based automatic assignment" />
           <Input label="Description" {...register('description')} />
           <div className="flex gap-3">
@@ -874,7 +876,15 @@ export function AdminZones() {
               </div>
               {zone.distributor && <p className="text-white/60 text-xs mb-2">👤 Distributor: {zone.distributor.name}</p>}
               <div className="flex flex-wrap gap-1.5 mt-2">
-                {zone.hostels?.map(h => <span key={h} className="text-xs bg-surface-3 text-white/60 px-2 py-0.5 rounded-full">{h}</span>)}
+                {zone.districts?.map((district) => (
+                  <span key={`district-${district}`} className="text-xs bg-surface-3 text-white/60 px-2 py-0.5 rounded-full">{district}</span>
+                ))}
+                {zone.localities?.map((locality) => (
+                  <span key={`locality-${locality}`} className="text-xs bg-surface-3 text-white/60 px-2 py-0.5 rounded-full">{locality}</span>
+                ))}
+                {zone.hostels?.map((h) => (
+                  <span key={`hostel-${h}`} className="text-xs bg-surface-3 text-white/60 px-2 py-0.5 rounded-full">{h}</span>
+                ))}
               </div>
             </div>
           ))
