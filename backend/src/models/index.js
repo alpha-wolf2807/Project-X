@@ -60,6 +60,41 @@ const Zone = mongoose.model('Zone', zoneSchema);
 
 
 // ════════════════════════════════════════════════════════════
+// DISTRICT MODEL
+// ════════════════════════════════════════════════════════════
+const districtSchema = new mongoose.Schema({
+  name: { type: String, required: true, unique: true, trim: true },
+  code: { type: String, required: true, unique: true, uppercase: true },
+  description: String,
+  isActive: { type: Boolean, default: true },
+  sortOrder: { type: Number, default: 0 },
+}, { timestamps: true });
+
+districtSchema.index({ isActive: 1 });
+districtSchema.index({ sortOrder: 1 });
+
+const District = mongoose.model('District', districtSchema);
+
+
+// ════════════════════════════════════════════════════════════
+// LOCALITY MODEL
+// ════════════════════════════════════════════════════════════
+const localitySchema = new mongoose.Schema({
+  name: { type: String, required: true, unique: true, trim: true },
+  code: { type: String, required: true, unique: true, uppercase: true },
+  district: { type: mongoose.Schema.Types.ObjectId, ref: 'District', required: true },
+  description: String,
+  isActive: { type: Boolean, default: true },
+  sortOrder: { type: Number, default: 0 },
+}, { timestamps: true });
+
+localitySchema.index({ district: 1, isActive: 1 });
+localitySchema.index({ sortOrder: 1 });
+
+const Locality = mongoose.model('Locality', localitySchema);
+
+
+// ════════════════════════════════════════════════════════════
 // COUPON MODEL
 // ════════════════════════════════════════════════════════════
 const couponSchema = new mongoose.Schema({
@@ -321,6 +356,8 @@ const Review = mongoose.model('Review', reviewSchema);
 module.exports = {
   Category,
   Zone,
+  District,
+  Locality,
   Coupon,
   Complaint,
   Notification,

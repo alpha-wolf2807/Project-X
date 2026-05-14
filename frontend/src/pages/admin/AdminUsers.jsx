@@ -9,7 +9,7 @@ import { useForm } from 'react-hook-form';
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
 import toast from 'react-hot-toast';
 import { Search, UserX, UserCheck, AlertTriangle, Plus, Tag, MapPin, MessageSquare, FileText, FolderOpen, Filter, Download, RefreshCw, Users, TrendingUp, Trash2 } from 'lucide-react';
-import { adminApi, analyticsApi, couponsApi, zonesApi, complaintsApi, categoriesApi } from '@services/api';
+import { adminApi, analyticsApi, couponsApi, zonesApi, complaintsApi, categoriesApi, districtsApi, localitiesApi } from '@services/api';
 import { useAuthStore } from '@store/authStore';
 import { useDebounce } from '@hooks/index';
 import { Button, Input, Badge, Modal, OrderStatusBadge, Avatar, Divider, EmptyState, SectionHeader } from '@components/common/GlobalLoader';
@@ -805,100 +805,150 @@ export function AdminCategories() {
 // ══════════════════════════════════════════════════════════════
 export function AdminZones() {
   const queryClient = useQueryClient();
-  const [showForm, setShowForm] = useState(false);
-  const { register, handleSubmit, reset } = useForm();
+  const [showDistrictForm, setShowDistrictForm] = useState(false);
+  const [showLocalityForm, setShowLocalityForm] = useState(false);
+  const { register: regDistrict, handleSubmit: handleDistrict, reset: resetDistrict } = useForm();
+  const { register: regLocality, handleSubmit: handleLocality, reset: resetLocality } = useForm();
 
-  const { data, isLoading } = useQuery({
+  const { data: zones = [] } = useQuery({
     queryKey: ['zones'],
     queryFn: zonesApi.getAll,
     select: (d) => d.data.zones,
   });
 
-  const createMutation = useMutation({
-    mutationFn: (d) => zonesApi.create({
-      ...d,
-      hostels: d.hostels.split(',').map((h) => h.trim()).filter(Boolean),
-      districts: d.districts?.split(',').map((district) => district.trim()).filter(Boolean) || [],
-      localities: d.localities?.split(',').map((l) => l.trim()).filter(Boolean) || [],
-    }),
-    onSuccess: () => { queryClient.invalidateQueries(['zones']); toast.success('Zone created!'); setShowForm(false); reset(); },
+  const { data: districts = [] } = useQuery({
+    queryKey: ['districts'],
+    queryFn: districtsApi.getAll,
+    select: (d) => d.data.districts,
+  });
+
+  const { data: localities = [] } = useQuery({
+    queryKey: ['localities'],
+    queryFn: localitiesApi.getAll,
+    select: (d) => d.data.localities,
+  });
+
+  const createDistrictMutation = useMutation({
+    mutationFn: districtsApi.create,
+    onSuccess: () => { queryClient.invalidateQueries(['districts']); toast.success('District added!'); setShowDistrictForm(false); resetDistrict(); },
     onError: (err) => toast.error(err.message),
   });
 
-  const [selectedZone, setSelectedZone] = useState(null);
-  const [showDeleteZoneModal, setShowDeleteZoneModal] = useState(false);
+  const createLocalityMutation = useMutation({
+    mutationFn: localitiesApi.create,
+    onSuccess: () => { queryClient.invalidateQueries(['localities']); toast.success('Locality added!'); setShowLocalityForm(false); resetLocality(); },
+    onError: (err) => toast.error(err.message),
+  });
 
-  const deleteZoneMutation = useMutation({
-    mutationFn: (id) => zonesApi.delete(id),
-    onSuccess: () => { queryClient.invalidateQueries(['zones']); toast.success('Zone removed.'); setShowDeleteZoneModal(false); setSelectedZone(null); },
+  const deleteDistrictMutation = useMutation({
+    mutationFn: districtsApi.delete,
+    onSuccess: () => { queryClient.invalidateQueries(['districts']); toast.success('District removed.'); },
+    onError: (err) => toast.error(err.message),
+  });
+
+  const deleteLocalityMutation = useMutation({
+    mutationFn: localitiesApi.delete,
+    onSuccess: () => { queryClient.invalidateQueries(['localities']); toast.success('Locality removed.'); },
     onError: (err) => toast.error(err.message),
   });
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-black text-white">Delivery Zones</h1>
-        <Button size="sm" onClick={() => setShowForm(!showForm)} leftIcon={<Plus className="w-4 h-4" />}>Add Zone</Button>
+        <h1 className="text-2xl font-black text-white">Region Management</h1>
+        <div className="flex gap-3">
+          <Button size="sm" onClick={() => setShowLocalityForm(!showLocalityForm)} leftIcon={<Plus className="w-4 h-4" />}>Add Locality</Button>
+          <Button size="sm" onClick={() => setShowDistrictForm(!showDistrictForm)} leftIcon={<Plus className="w-4 h-4" />}>Add District</Button>
+        </div>
       </div>
 
-      {showForm && (
-        <form onSubmit={handleSubmit((d) => createMutation.mutate(d))} className="card p-5 space-y-4 border-brand-500/30">
+      {/* District Form */}
+      {showDistrictForm && (
+        <form onSubmit={handleDistrict((d) => createDistrictMutation.mutate(d))} className="card p-5 space-y-4 border-brand-500/30">
           <div className="grid grid-cols-2 gap-4">
-            <Input label="Zone Name *" placeholder="North Campus" {...register('name', { required: true })} />
-            <Input label="Zone Code *" placeholder="NC" {...register('code', { required: true })} />
+            <Input label="District Name *" placeholder="Chennai" {...regDistrict('name', { required: true })} />
+            <Input label="District Code *" placeholder="CHE" {...regDistrict('code', { required: true })} />
           </div>
-          <Input label="Hostels (comma-separated) *" placeholder="Boys Hostel A, Girls Hostel B, PG Block" {...register('hostels', { required: true })} />
-          <Input label="Districts (comma-separated)" placeholder="Chennai, Coimbatore" {...register('districts')} hint="Used for district-based automatic assignment" />
-          <Input label="Localities / Areas (comma-separated)" placeholder="T. Nagar, Mylapore, Velachery" {...register('localities')} hint="Used for district/locality based automatic assignment" />
-          <Input label="Description" {...register('description')} />
+          <Input label="Description" {...regDistrict('description')} />
           <div className="flex gap-3">
-            <Button type="submit" loading={createMutation.isPending}>Create Zone</Button>
-            <Button variant="secondary" onClick={() => { setShowForm(false); reset(); }}>Cancel</Button>
+            <Button type="submit" loading={createDistrictMutation.isPending}>Add District</Button>
+            <Button variant="secondary" onClick={() => { setShowDistrictForm(false); resetDistrict(); }}>Cancel</Button>
           </div>
         </form>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-        {isLoading ? Array.from({ length: 4 }).map((_, i) => <div key={i} className="card p-5 h-36 animate-pulse bg-surface-2" />) :
-          data?.map((zone) => (
-            <div key={zone._id} className="card p-5">
+      {/* Locality Form */}
+      {showLocalityForm && (
+        <form onSubmit={handleLocality((d) => createLocalityMutation.mutate(d))} className="card p-5 space-y-4 border-brand-500/30">
+          <div className="grid grid-cols-2 gap-4">
+            <Input label="Locality Name *" placeholder="T. Nagar" {...regLocality('name', { required: true })} />
+            <Input label="Locality Code *" placeholder="TNG" {...regLocality('code', { required: true })} />
+            <div>
+              <label className="text-sm text-white/60 block mb-1.5">District *</label>
+              <select className="input w-full" {...regLocality('district', { required: 'Select a district' })}>
+                <option value="">Select district</option>
+                {districts.map((district) => (
+                  <option key={district._id} value={district._id}>{district.name}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+          <Input label="Description" {...regLocality('description')} />
+          <div className="flex gap-3">
+            <Button type="submit" loading={createLocalityMutation.isPending}>Add Locality</Button>
+            <Button variant="secondary" onClick={() => { setShowLocalityForm(false); resetLocality(); }}>Cancel</Button>
+          </div>
+        </form>
+      )}
+
+      {/* Districts Section */}
+      <div className="space-y-4">
+        <SectionHeader title="Districts" emoji="🏛️" />
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+          {districts.map((district) => (
+            <div key={district._id} className="card p-5">
               <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 rounded-xl bg-brand-500/20 flex items-center justify-center">
-                  <MapPin className="w-5 h-5 text-brand-400" />
+                <div className="w-10 h-10 rounded-xl bg-blue-500/20 flex items-center justify-center">
+                  <MapPin className="w-5 h-5 text-blue-400" />
                 </div>
                 <div>
-                  <p className="text-white font-bold">{zone.name}</p>
-                  <p className="text-white/40 text-xs font-mono">{zone.code}</p>
+                  <p className="text-white font-bold">{district.name}</p>
+                  <p className="text-white/40 text-xs font-mono">{district.code}</p>
                 </div>
-                <button onClick={() => { setSelectedZone(zone); setShowDeleteZoneModal(true); }} className="ml-auto w-8 h-8 rounded-lg bg-red-500/10 hover:bg-red-500/20 flex items-center justify-center text-red-300 transition-colors" title="Delete Zone">
+                <button onClick={() => deleteDistrictMutation.mutate(district._id)} className="ml-auto w-8 h-8 rounded-lg bg-red-500/10 hover:bg-red-500/20 flex items-center justify-center text-red-300 transition-colors" title="Delete District">
                   <Trash2 className="w-4 h-4" />
                 </button>
               </div>
-              {zone.distributor && <p className="text-white/60 text-xs mb-2">👤 Distributor: {zone.distributor.name}</p>}
-              <div className="flex flex-wrap gap-1.5 mt-2">
-                {zone.districts?.map((district) => (
-                  <span key={`district-${district}`} className="text-xs bg-surface-3 text-white/60 px-2 py-0.5 rounded-full">{district}</span>
-                ))}
-                {zone.localities?.map((locality) => (
-                  <span key={`locality-${locality}`} className="text-xs bg-surface-3 text-white/60 px-2 py-0.5 rounded-full">{locality}</span>
-                ))}
-                {zone.hostels?.map((h) => (
-                  <span key={`hostel-${h}`} className="text-xs bg-surface-3 text-white/60 px-2 py-0.5 rounded-full">{h}</span>
-                ))}
-              </div>
+              {district.description && <p className="text-white/60 text-sm">{district.description}</p>}
             </div>
-          ))
-        }
-      </div>
-      <Modal isOpen={showDeleteZoneModal} onClose={() => setShowDeleteZoneModal(false)} title={`Delete ${selectedZone?.name}?`}>
-        <div className="space-y-4">
-          <p className="text-sm text-white/70">This action will remove the zone from the platform. It can be recreated if needed.</p>
-          <div className="flex gap-3">
-            <Button variant="danger" loading={deleteZoneMutation.isPending} onClick={() => deleteZoneMutation.mutate(selectedZone?._id)} className="flex-1">Delete Zone</Button>
-            <Button variant="secondary" onClick={() => setShowDeleteZoneModal(false)}>Cancel</Button>
-          </div>
+          ))}
         </div>
-      </Modal>
+      </div>
+
+      {/* Localities Section */}
+      <div className="space-y-4">
+        <SectionHeader title="Localities" emoji="🏘️" />
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+          {localities.map((locality) => (
+            <div key={locality._id} className="card p-5">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-10 h-10 rounded-xl bg-green-500/20 flex items-center justify-center">
+                  <MapPin className="w-5 h-5 text-green-400" />
+                </div>
+                <div>
+                  <p className="text-white font-bold">{locality.name}</p>
+                  <p className="text-white/40 text-xs font-mono">{locality.code}</p>
+                  <p className="text-white/50 text-xs">{locality.district?.name}</p>
+                </div>
+                <button onClick={() => deleteLocalityMutation.mutate(locality._id)} className="ml-auto w-8 h-8 rounded-lg bg-red-500/10 hover:bg-red-500/20 flex items-center justify-center text-red-300 transition-colors" title="Delete Locality">
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              </div>
+              {locality.description && <p className="text-white/60 text-sm">{locality.description}</p>}
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }

@@ -12,11 +12,10 @@ import { z } from 'zod';
 import { Eye, EyeOff, Mail, Lock, User, Phone, Home, ArrowRight, KeyRound } from 'lucide-react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
-import { authApi, zonesApi } from '@services/api';
+import { authApi, districtsApi, localitiesApi } from '@services/api';
 import { useAuthStore } from '@store/authStore';
 import { connectSocket } from '@services/socket';
 import { Button, Input, Divider } from '@components/common/GlobalLoader';
-import { districtLocalities } from '../../data/districts';
 
 // ── Shared Layout ──────────────────────────────────────────────
 const AuthLayout = ({ children, title, subtitle }) => (
@@ -210,14 +209,19 @@ export function RegisterPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
-  const { data: zones = [] } = useQuery({
-    queryKey: ['zones'],
-    queryFn: zonesApi.getAll,
-    select: (d) => d.data.zones,
+  const { data: districts = [] } = useQuery({
+    queryKey: ['districts'],
+    queryFn: districtsApi.getAll,
+    select: (d) => d.data.districts,
     staleTime: 30 * 60 * 1000,
   });
 
-  const districtOptions = zones.length ? zones.map((zone) => ({ district: zone.name, localities: zone.localities || [] })) : districtLocalities;
+  const { data: localities = [] } = useQuery({
+    queryKey: ['localities'],
+    queryFn: localitiesApi.getAll,
+    select: (d) => d.data.localities,
+    staleTime: 30 * 60 * 1000,
+  });
 
   const {
     register,
@@ -235,7 +239,7 @@ export function RegisterPage() {
     setValue('locality', '');
   }, [selectedDistrict, setValue]);
 
-  const localityOptions = districtOptions.find((option) => option.district === selectedDistrict)?.localities || [];
+  const localityOptions = localities.filter((locality) => locality.district._id === selectedDistrict);
 
   const mutation = useMutation({
     mutationFn: authApi.register,
@@ -279,8 +283,8 @@ export function RegisterPage() {
             <label className="text-sm font-semibold text-white/70 mb-2 block">District</label>
             <select className="input w-full" {...register('district') }>
               <option value="">Select district</option>
-              {districtOptions.map((district) => (
-                <option key={district.district} value={district.district}>{district.district}</option>
+              {districts.map((district) => (
+                <option key={district._id} value={district._id}>{district.name}</option>
               ))}
             </select>
             {errors.district?.message && <p className="text-red-400 text-xs mt-1">{errors.district.message}</p>}
@@ -290,7 +294,7 @@ export function RegisterPage() {
             <select className="input w-full" {...register('locality')} disabled={!selectedDistrict}>
               <option value="">Select locality</option>
               {localityOptions.map((locality) => (
-                <option key={locality} value={locality}>{locality}</option>
+                <option key={locality._id} value={locality._id}>{locality.name}</option>
               ))}
             </select>
             {errors.locality?.message && <p className="text-red-400 text-xs mt-1">{errors.locality.message}</p>}

@@ -7,7 +7,7 @@
 
 const User = require('../models/User');
 const Customer = require('../models/Customer');
-const { AuditLog } = require('../models/index');
+const { AuditLog, District, Locality } = require('../models/index');
 const {
   generateTokenPair,
   hashToken,
@@ -56,6 +56,20 @@ exports.register = async (req, res, next) => {
     }
   }
 
+  // Look up district and locality names
+  let districtName = district;
+  let localityName = locality;
+
+  if (district) {
+    const districtDoc = await District.findById(district);
+    if (districtDoc) districtName = districtDoc.name;
+  }
+
+  if (locality) {
+    const localityDoc = await Locality.findById(locality);
+    if (localityDoc) localityName = localityDoc.name;
+  }
+
   // Create user
   const user = await User.create({
     name,
@@ -71,8 +85,8 @@ exports.register = async (req, res, next) => {
     user: user._id,
     hostelName,
     rollNumber,
-    district,
-    locality,
+    district: districtName,
+    locality: localityName,
     gender,
     isCollegeStudent: !!collegeStudent,
     collegeName,

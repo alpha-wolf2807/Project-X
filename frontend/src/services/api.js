@@ -264,4 +264,21 @@ export const zonesApi = {
   delete: (id) => api.delete(`/zones/${id}`),
 };
 
+// Districts
+export const districtsApi = {
+  getAll: () => api.get('/districts'),
+  create: (data) => api.post('/districts', data),
+  update: (id, data) => api.put(`/districts/${id}`, data),
+  delete: (id) => api.delete(`/districts/${id}`),
+};
+
+// Localities
+export const localitiesApi = {
+  getAll: () => api.get('/localities'),
+  getByDistrict: (districtId) => api.get(`/localities/by-district/${districtId}`),
+  create: (data) => api.post('/localities', data),
+  update: (id, data) => api.put(`/localities/${id}`, data),
+  delete: (id) => api.delete(`/localities/${id}`),
+};
+
 export default api;

@@ -36,6 +36,8 @@ const complaintRoutes = require('./routes/complaint.routes');
 const analyticsRoutes = require('./routes/analytics.routes');
 const chatRoutes = require('./routes/chat.routes');
 const zoneRoutes = require('./routes/zone.routes');
+const districtRoutes = require('./routes/district.routes');
+const localityRoutes = require('./routes/locality.routes');
 const couponRoutes = require('./routes/coupon.routes');
 const categoryRoutes = require('./routes/category.routes');
 
@@ -193,6 +195,8 @@ app.use(`${API}/complaints`, complaintRoutes);
 app.use(`${API}/analytics`, analyticsRoutes);
 app.use(`${API}/chat`, chatRoutes);
 app.use(`${API}/zones`, zoneRoutes);
+app.use(`${API}/districts`, districtRoutes);
+app.use(`${API}/localities`, localityRoutes);
 app.use(`${API}/coupons`, couponRoutes);
 app.use(`${API}/categories`, categoryRoutes);
 
