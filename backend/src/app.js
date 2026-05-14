@@ -53,10 +53,11 @@ app.use(
 const allowedOrigins = [
   process.env.FRONTEND_URL,
   'https://cartex-dhy4.onrender.com',
+  'https://project-x-j9go.onrender.com',
   'http://127.0.0.1:5173',
   'http://localhost:3000',
   'http://127.0.0.1:3000',
-];
+].filter(Boolean);
 
 app.use(
   cors({
