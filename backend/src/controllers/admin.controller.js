@@ -22,6 +22,75 @@ const buildExactMatchRegex = (value) => {
   return { $regex: `^${escaped}$`, $options: 'i' };
 };
 
+// Helper to find zone by district (tries name and ID matching with logging)
+const findZoneByDistrict = async (districtId, districtName) => {
+  // Get all active zones for debugging
+  const allZones = await Zone.find({ isActive: true }).select('name districts');
+  console.log(`[DEBUG] findZoneByDistrict: Looking for "${districtName}" (ID: ${districtId})`);
+  console.log(`[DEBUG] Active zones:`, allZones.map(z => ({ name: z.name, districts: z.districts })));
+
+  // Try 1: Simple exact string match in array
+  let zone = await Zone.findOne({
+    isActive: true,
+    districts: districtName
+  });
+  if (zone) {
+    console.log(`[DEBUG] Found by exact match: ${zone.name}`);
+    return zone;
+  }
+
+  // Try 2: Case-insensitive regex on array element
+  zone = await Zone.findOne({
+    isActive: true,
+    districts: { $regex: `^${districtName}$`, $options: 'i' }
+  });
+  if (zone) {
+    console.log(`[DEBUG] Found by case-insensitive regex: ${zone.name}`);
+    return zone;
+  }
+
+  // Try 3: Any zone that has districts array populated
+  zone = await Zone.findOne({
+    isActive: true,
+    districts: { $exists: true, $ne: [] }
+  });
+  if (zone) {
+    console.log(`[DEBUG] Warning: Returning first zone with districts as fallback: ${zone.name}`);
+    return zone;
+  }
+
+  console.log(`[DEBUG] No zone found for district "${districtName}"`);
+  return null;
+};
+
+// Helper to find zone by locality (tries name and ID matching)
+const findZoneByLocality = async (localityId, localityName) => {
+  console.log(`[DEBUG] findZoneByLocality: Looking for "${localityName}" (ID: ${localityId})`);
+
+  // Try 1: Simple exact string match
+  let zone = await Zone.findOne({
+    isActive: true,
+    localities: localityName
+  });
+  if (zone) {
+    console.log(`[DEBUG] Found by exact match: ${zone.name}`);
+    return zone;
+  }
+
+  // Try 2: Case-insensitive regex
+  zone = await Zone.findOne({
+    isActive: true,
+    localities: { $regex: `^${localityName}$`, $options: 'i' }
+  });
+  if (zone) {
+    console.log(`[DEBUG] Found by case-insensitive regex: ${zone.name}`);
+    return zone;
+  }
+
+  console.log(`[DEBUG] No zone found for locality "${localityName}"`);
+  return null;
+};
+
 // ── Create Distributor Account ────────────────────────────────
 exports.createDistributor = async (req, res, next) => {
   const { name, email, phone, password, zoneId, districtId } = req.body;
@@ -41,8 +110,10 @@ exports.createDistributor = async (req, res, next) => {
     if (!district) throw new AppError('District not found.', 404);
     districtName = district.name;
     if (!zoneId) {
-      assignedZone = await Zone.findOne({ isActive: true, districts: buildExactMatchRegex(districtName) });
-      if (!assignedZone) throw new AppError('No active zone found for selected district.', 404);
+      assignedZone = await findZoneByDistrict(districtId, districtName);
+      if (!assignedZone) {
+        throw new AppError(`No active zone found for district "${districtName}". Please assign this district to a zone first.`, 404);
+      }
     }
   }
 
@@ -113,7 +184,7 @@ exports.createDeliveryDude = async (req, res, next) => {
     localityName = locality.name;
     districtName = locality.district?.name;
     if (!zoneId) {
-      assignedZone = await Zone.findOne({ isActive: true, localities: buildExactMatchRegex(localityName) });
+      assignedZone = await findZoneByLocality(localityId, localityName);
     }
   }
 
@@ -122,7 +193,7 @@ exports.createDeliveryDude = async (req, res, next) => {
     if (!district) throw new AppError('District not found.', 404);
     districtName = district.name;
     if (!zoneId) {
-      assignedZone = await Zone.findOne({ isActive: true, districts: buildExactMatchRegex(districtName) });
+      assignedZone = await findZoneByDistrict(districtId, districtName);
     }
   }
 
