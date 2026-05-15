@@ -10,7 +10,32 @@ r.get('/', async (req, res) => {
   res.json({ success: true, data: { districts } });
 });
 
+function escapeRegex(text) {
+  return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
 r.post('/', protect, authorize('admin'), async (req, res) => {
+  const { name } = req.body;
+  if (!name) throw new AppError('Name is required.', 400);
+
+  const regex = { $regex: `^${escapeRegex(name.trim())}$`, $options: 'i' };
+  const existing = await District.findOne({ name: regex });
+
+  if (existing) {
+    if (existing.isActive) {
+      throw new AppError(`Name '${existing.name}' already exists.`, 409);
+    }
+
+    // Reactivate and update fields
+    existing.isActive = true;
+    existing.code = req.body.code || existing.code;
+    existing.description = req.body.description || existing.description;
+    existing.sortOrder = typeof req.body.sortOrder !== 'undefined' ? req.body.sortOrder : existing.sortOrder;
+    await existing.save();
+
+    return res.status(200).json({ success: true, message: 'District reactivated.', data: { district: existing } });
+  }
+
   const district = await District.create(req.body);
   res.status(201).json({ success: true, data: { district } });
 });

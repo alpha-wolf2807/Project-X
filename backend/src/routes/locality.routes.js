@@ -20,7 +20,33 @@ r.get('/by-district/:districtId', async (req, res) => {
   res.json({ success: true, data: { localities } });
 });
 
+function escapeRegex(text) {
+  return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
 r.post('/', protect, authorize('admin'), async (req, res) => {
+  const { name, district } = req.body;
+  if (!name) throw new AppError('Name is required.', 400);
+
+  const regex = { $regex: `^${escapeRegex(name.trim())}$`, $options: 'i' };
+  const existing = await Locality.findOne({ name: regex });
+
+  if (existing) {
+    if (existing.isActive) {
+      throw new AppError(`Name '${existing.name}' already exists.`, 409);
+    }
+
+    // Reactivate and update fields (allow changing district on reactivate)
+    existing.isActive = true;
+    if (district) existing.district = district;
+    existing.code = req.body.code || existing.code;
+    existing.description = req.body.description || existing.description;
+    existing.sortOrder = typeof req.body.sortOrder !== 'undefined' ? req.body.sortOrder : existing.sortOrder;
+    await existing.save();
+
+    return res.status(200).json({ success: true, message: 'Locality reactivated.', data: { locality: existing } });
+  }
+
   const locality = await Locality.create(req.body);
   res.status(201).json({ success: true, data: { locality } });
 });
