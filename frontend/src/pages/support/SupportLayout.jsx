@@ -1,5 +1,5 @@
 /**
- * PROJECT-X — Support Portal: Layout, Dashboard, Complaints, ComplaintDetail
+ * CARTEX — Support Portal: Layout, Dashboard, Complaints, ComplaintDetail
  */
 
 import { useState } from 'react';
@@ -40,7 +40,7 @@ export function SupportLayout() {
             <span className="text-white font-black text-lg">X</span>
           </div>
           <div>
-            <p className="font-black text-white text-sm">PROJECT-X</p>
+            <p className="font-black text-white text-sm">CARTEX</p>
             <p className="text-blue-400 text-xs">Support</p>
           </div>
         </div>
@@ -502,3 +502,4 @@ export function SupportComplaintDetail() {
 }
 
 export default SupportLayout;
+

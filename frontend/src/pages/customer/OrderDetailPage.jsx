@@ -1,5 +1,5 @@
 /**
- * PROJECT-X — Order Detail + Real-Time Tracking + Chat
+ * CARTEX — Order Detail + Real-Time Tracking + Chat
  */
 
 import { useState, useEffect, useRef } from 'react';
@@ -372,3 +372,4 @@ export default function OrderDetailPage() {
     </div>
   );
 }
+

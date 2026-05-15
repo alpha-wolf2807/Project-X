@@ -1,5 +1,5 @@
 /**
- * PROJECT-X — Product Detail Page
+ * CARTEX — Product Detail Page
  * Image gallery, description, reviews, add to cart, related products
  */
 
@@ -364,3 +364,4 @@ const ProductDetailSkeleton = () => (
     </div>
   </div>
 );
+

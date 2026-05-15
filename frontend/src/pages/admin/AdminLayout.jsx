@@ -1,5 +1,5 @@
 /**
- * PROJECT-X — Admin Layout
+ * CARTEX — Admin Layout
  *
  * Full-featured admin sidebar with:
  * - Collapsible navigation
@@ -59,7 +59,7 @@ export default function AdminLayout() {
         </div>
         {!collapsed && (
           <div>
-            <span className="font-black text-white text-sm">PROJECT-X</span>
+            <span className="font-black text-white text-sm">CARTEX</span>
             <div className="flex items-center gap-1">
               <Shield className="w-3 h-3 text-brand-400" />
               <span className="text-brand-400 text-xs font-medium">Admin</span>
@@ -183,3 +183,4 @@ export default function AdminLayout() {
     </div>
   );
 }
+

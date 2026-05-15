@@ -1,5 +1,5 @@
 /**
- * PROJECT-X — Admin Dashboard
+ * CARTEX — Admin Dashboard
  *
  * Live analytics with animated counters, Recharts graphs,
  * real-time activity feed, and heatmaps.
@@ -328,3 +328,4 @@ export default function AdminDashboard() {
     </div>
   );
 }
+

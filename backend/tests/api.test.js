@@ -9,7 +9,7 @@ const app = require('../src/app');
 
 // ── Test Setup ────────────────────────────────────────────────
 beforeAll(async () => {
-  const testDBUri = process.env.MONGODB_TEST_URI || 'mongodb://localhost:27017/projectx_test';
+  const testDBUri = process.env.MONGODB_TEST_URI || 'mongodb://localhost:27017/Cartex_test';
   await mongoose.connect(testDBUri);
 });
 
@@ -175,4 +175,5 @@ describe('Security — CORS', () => {
     expect([200, 403, 500]).toContain(res.status);
   });
 });
+
 

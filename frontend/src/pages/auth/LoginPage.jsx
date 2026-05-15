@@ -1,5 +1,5 @@
 /**
- * PROJECT-X — Auth Pages
+ * CARTEX — Auth Pages
  * Login, Register, Verify Email, Forgot/Reset Password
  */
 
@@ -38,7 +38,7 @@ const AuthLayout = ({ children, title, subtitle }) => (
           <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-brand-500 to-red-500 flex items-center justify-center shadow-glow-orange">
             <span className="text-white font-black text-2xl">X</span>
           </div>
-          <span className="font-black text-2xl gradient-text">PROJECT-X</span>
+          <span className="font-black text-2xl gradient-text">CARTEX</span>
         </Link>
         <h1 className="text-2xl font-black text-white mt-6 mb-2">{title}</h1>
         {subtitle && <p className="text-white/50 text-sm">{subtitle}</p>}
@@ -105,7 +105,7 @@ export function LoginPage() {
   };
 
   return (
-    <AuthLayout title="Welcome back!" subtitle="Sign in to your Project-X account">
+    <AuthLayout title="Welcome back!" subtitle="Sign in to your CARTEX account">
       <form onSubmit={handleSubmit(handleLogin)} className="space-y-4">
         <Input
           label="Email"
@@ -253,7 +253,7 @@ export function RegisterPage() {
   });
 
   return (
-    <AuthLayout title="Join Project-X" subtitle="Shop smarter from your hostel">
+    <AuthLayout title="Join CARTEX" subtitle="Shop smarter from your hostel">
       <form onSubmit={handleSubmit((d) => mutation.mutate(d))} className="space-y-4">
         <div className="grid grid-cols-2 gap-4">
           <Input label="Full Name" placeholder="Arjun Sharma" leftIcon={<User className="w-4 h-4" />} error={errors.name?.message} {...register('name')} />
@@ -415,7 +415,7 @@ export function VerifyEmailPage() {
     mutationFn: authApi.verifyEmail,
     onSuccess: (data) => {
       login(data.data.user, data.data.accessToken);
-      toast.success('Email verified! Welcome to Project-X 🎉');
+      toast.success('Email verified! Welcome to CARTEX 🎉');
       connectSocket();
       navigate('/');
     },
@@ -595,3 +595,4 @@ export function ResetPasswordPage() {
 }
 
 export default LoginPage;
+

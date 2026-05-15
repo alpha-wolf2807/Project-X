@@ -1,5 +1,5 @@
 /**
- * PROJECT-X — Delivery Portal: Layout, Dashboard, Active, History, Earnings
+ * CARTEX — Delivery Portal: Layout, Dashboard, Active, History, Earnings
  */
 
 import { useState, useEffect, useRef } from 'react';
@@ -44,7 +44,7 @@ export function DeliveryLayout() {
             <span className="text-white font-black text-lg">X</span>
           </div>
           <div>
-            <p className="font-black text-white text-sm">PROJECT-X</p>
+            <p className="font-black text-white text-sm">CARTEX</p>
             <p className="text-accent-green text-xs flex items-center gap-1">
               <span className="w-1.5 h-1.5 rounded-full bg-accent-green animate-pulse inline-block" />
               Delivery
@@ -659,3 +659,4 @@ export function DeliveryEarnings() {
 }
 
 export default DeliveryLayout;
+

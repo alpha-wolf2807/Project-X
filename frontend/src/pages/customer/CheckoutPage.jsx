@@ -1,5 +1,5 @@
 /**
- * PROJECT-X — Checkout Page
+ * CARTEX — Checkout Page
  * Address selection, coupon, Razorpay payment, order confirmation
  */
 
@@ -105,7 +105,7 @@ export default function CheckoutPage() {
             key: keyId,
             amount,
             currency,
-            name: 'Project-X',
+            name: 'CARTEX',
             description: 'Hostel Commerce',
             order_id: razorpayOrderId,
             theme: { color: '#f97316' },
@@ -306,3 +306,4 @@ export default function CheckoutPage() {
     </div>
   );
 }
+

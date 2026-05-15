@@ -131,7 +131,7 @@ npm run dev
 // Run this once in MongoDB compass or mongosh:
 db.users.insertOne({
   name: "Admin User",
-  email: "admin@projectx.com",
+  email: "admin@Cartex.com",
   phone: "9999999999",
   password: "$2b$12$...", // bcrypt hash of your password
   role: "admin",
@@ -287,7 +287,7 @@ pm2 save
 
 # Nginx reverse proxy
 sudo apt install nginx
-sudo nano /etc/nginx/sites-available/projectx
+sudo nano /etc/nginx/sites-available/Cartex
 # Add: proxy_pass import.meta.env.VITE_API_URL
 sudo nginx -t && sudo systemctl reload nginx
 ```
@@ -298,7 +298,7 @@ sudo nginx -t && sudo systemctl reload nginx
 2. Add IP whitelist: 0.0.0.0/0 (or specific IPs)
 3. Create database user
 4. Get connection string → paste in `MONGODB_URI`
-5. Database: `projectx`
+5. Database: `Cartex`
 
 ### Redis Setup (optional but recommended)
 
@@ -332,7 +332,7 @@ npm test
 # API testing with curl
 curl -X POST import.meta.env.VITE_API_URL/api/v1/auth/login \
   -H "Content-Type: application/json" \
-  -d '{"email":"admin@projectx.com","password":"Admin@1234"}'
+  -d '{"email":"admin@Cartex.com","password":"Admin@1234"}'
 
 # Load testing (install artillery)
 npm install -g artillery
@@ -441,4 +441,5 @@ Built with ❤️ for hostellers everywhere.
 ---
 
 *CARTEX — Built like a real startup preparing for millions of users.*
+
 

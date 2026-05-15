@@ -11,14 +11,14 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: projectx-backend
+    container_name: Cartex-backend
     restart: unless-stopped
     ports:
       - "5000:5000"
     environment:
       NODE_ENV: development
       PORT: 5000
-      MONGODB_URI: mongodb://mongo:27017/projectx
+      MONGODB_URI: mongodb://mongo:27017/Cartex
       REDIS_URL: redis://redis:6379
     env_file:
       - ./backend/.env
@@ -31,14 +31,14 @@ services:
       redis:
         condition: service_healthy
     networks:
-      - projectx-network
+      - Cartex-network
 
   # ── Frontend ─────────────────────────────────────
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    container_name: projectx-frontend
+    container_name: Cartex-frontend
     restart: unless-stopped
     ports:
       - "5173:5173"
@@ -50,12 +50,12 @@ services:
     depends_on:
       - backend
     networks:
-      - projectx-network
+      - Cartex-network
 
   # ── MongoDB ───────────────────────────────────────
   mongo:
     image: mongo:7.0
-    container_name: projectx-mongo
+    container_name: Cartex-mongo
     restart: unless-stopped
     ports:
       - "27017:27017"
@@ -68,12 +68,12 @@ services:
       timeout: 5s
       retries: 5
     networks:
-      - projectx-network
+      - Cartex-network
 
   # ── Redis ─────────────────────────────────────────
   redis:
     image: redis:7.2-alpine
-    container_name: projectx-redis
+    container_name: Cartex-redis
     restart: unless-stopped
     ports:
       - "6379:6379"
@@ -86,24 +86,24 @@ services:
       timeout: 5s
       retries: 5
     networks:
-      - projectx-network
+      - Cartex-network
 
   # ── Mongo Express (DB GUI for dev) ────────────────
   mongo-express:
     image: mongo-express:latest
-    container_name: projectx-mongo-express
+    container_name: Cartex-mongo-express
     restart: unless-stopped
     ports:
       - "8081:8081"
     environment:
       ME_CONFIG_MONGODB_URL: mongodb://mongo:27017/
       ME_CONFIG_BASICAUTH_USERNAME: admin
-      ME_CONFIG_BASICAUTH_PASSWORD: projectx123
+      ME_CONFIG_BASICAUTH_PASSWORD: Cartex123
     depends_on:
       mongo:
         condition: service_healthy
     networks:
-      - projectx-network
+      - Cartex-network
     profiles:
       - dev-tools
 
@@ -114,6 +114,7 @@ volumes:
     driver: local
 
 networks:
-  projectx-network:
+  Cartex-network:
     driver: bridge
+
 

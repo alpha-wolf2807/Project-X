@@ -55,12 +55,12 @@ const seed = async () => {
   console.log('\n🌱 Starting database seed...\n');
 
   // ── Admin User ───────────────────────────────────────────────
-  const existingAdmin = await User.findOne({ email: 'admin@projectx.com' });
+  const existingAdmin = await User.findOne({ email: 'admin@Cartex.com' });
   let adminUser;
   const adminPassword = 'Admin@1234';
   const adminPayload = {
     name: 'Super Admin',
-    email: 'admin@projectx.com',
+    email: 'admin@Cartex.com',
     phone: '9000000001',
     role: 'admin',
     isActive: true,
@@ -72,7 +72,7 @@ const seed = async () => {
   if (!existingAdmin) {
     const hashedPassword = await bcrypt.hash(adminPassword, 12);
     adminUser = await User.create({ ...adminPayload, password: hashedPassword });
-    console.log('✅ Admin created: admin@projectx.com / Admin@1234');
+    console.log('✅ Admin created: admin@Cartex.com / Admin@1234');
   } else {
     const hashedPassword = await bcrypt.hash(adminPassword, 12);
     await User.updateOne(
@@ -80,70 +80,70 @@ const seed = async () => {
       { $set: { ...adminPayload, password: hashedPassword } }
     );
     adminUser = await User.findById(existingAdmin._id);
-    console.log('✅ Admin exists — password reset to: admin@projectx.com / Admin@1234');
+    console.log('✅ Admin exists — password reset to: admin@Cartex.com / Admin@1234');
   }
 
   // ── Support User ─────────────────────────────────────────────
-  const existingSupport = await User.findOne({ email: 'support@projectx.com' });
+  const existingSupport = await User.findOne({ email: 'support@Cartex.com' });
   if (!existingSupport) {
     const hashedPassword = await bcrypt.hash('Support@1234', 12);
     await User.create({
       name: 'Support Agent 1',
-      email: 'support@projectx.com',
+      email: 'support@Cartex.com',
       phone: '9000000002',
       password: hashedPassword,
       role: 'support',
       referralCode: 'SUPP001',
     });
-    console.log('✅ Support user created: support@projectx.com / Support@1234');
+    console.log('✅ Support user created: support@Cartex.com / Support@1234');
   }
 
   // ── Sample Distributor ────────────────────────────────────────
-  const existingDist = await User.findOne({ email: 'distributor@projectx.com' });
+  const existingDist = await User.findOne({ email: 'distributor@Cartex.com' });
   let distributor;
   if (!existingDist) {
     const hashedPassword = await bcrypt.hash('Distrib@1234', 12);
     distributor = await User.create({
       name: 'Ramesh Kumar (Distributor)',
-      email: 'distributor@projectx.com',
+      email: 'distributor@Cartex.com',
       phone: '9000000003',
       password: hashedPassword,
       role: 'distributor',
       referralCode: 'DIST001',
     });
-    console.log('✅ Distributor created: distributor@projectx.com / Distrib@1234');
+    console.log('✅ Distributor created: distributor@Cartex.com / Distrib@1234');
   } else {
     distributor = existingDist;
   }
 
   // ── Sample Delivery Dude ──────────────────────────────────────
-  const existingDelivery = await User.findOne({ email: 'delivery@projectx.com' });
+  const existingDelivery = await User.findOne({ email: 'delivery@Cartex.com' });
   if (!existingDelivery) {
     const hashedPassword = await bcrypt.hash('Delivery@1234', 12);
     await User.create({
       name: 'Suresh Yadav (Delivery)',
-      email: 'delivery@projectx.com',
+      email: 'delivery@Cartex.com',
       phone: '9000000004',
       password: hashedPassword,
       role: 'delivery',
       referralCode: 'DELV001',
     });
-    console.log('✅ Delivery dude created: delivery@projectx.com / Delivery@1234');
+    console.log('✅ Delivery dude created: delivery@Cartex.com / Delivery@1234');
   }
 
   // ── Sample Customer ───────────────────────────────────────────
-  const existingCustomer = await User.findOne({ email: 'customer@projectx.com' });
+  const existingCustomer = await User.findOne({ email: 'customer@Cartex.com' });
   if (!existingCustomer) {
     const hashedPassword = await bcrypt.hash('Customer@1234', 12);
     await User.create({
       name: 'Arjun Sharma (Customer)',
-      email: 'customer@projectx.com',
+      email: 'customer@Cartex.com',
       phone: '9000000005',
       password: hashedPassword,
       role: 'customer',
       referralCode: 'CUST001',
     });
-    console.log('✅ Customer created: customer@projectx.com / Customer@1234');
+    console.log('✅ Customer created: customer@Cartex.com / Customer@1234');
   }
 
   // ── Categories ────────────────────────────────────────────────
@@ -363,11 +363,11 @@ const seed = async () => {
   console.log('\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
   console.log('🎉 Seed complete! Login credentials:');
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-  console.log('Admin:        admin@projectx.com     / Admin@1234');
-  console.log('Support:      support@projectx.com   / Support@1234');
-  console.log('Distributor:  distributor@projectx.com / Distrib@1234');
-  console.log('Delivery:     delivery@projectx.com  / Delivery@1234');
-  console.log('Customer:     customer@projectx.com  / Customer@1234');
+  console.log('Admin:        admin@Cartex.com     / Admin@1234');
+  console.log('Support:      support@Cartex.com   / Support@1234');
+  console.log('Distributor:  distributor@Cartex.com / Distrib@1234');
+  console.log('Delivery:     delivery@Cartex.com  / Delivery@1234');
+  console.log('Customer:     customer@Cartex.com  / Customer@1234');
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
 
   await mongoose.connection.close();
@@ -378,4 +378,5 @@ seed().catch((err) => {
   console.error('❌ Seed failed:', err);
   process.exit(1);
 });
+
 

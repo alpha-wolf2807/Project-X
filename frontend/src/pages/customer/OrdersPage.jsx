@@ -1,5 +1,5 @@
 /**
- * PROJECT-X — Customer Pages: Orders, Profile, Cart, Wallet, Wishlist, Complaints
+ * CARTEX — Customer Pages: Orders, Profile, Cart, Wallet, Wishlist, Complaints
  */
 
 import { useState } from 'react';
@@ -477,3 +477,4 @@ export function ComplaintsPage() {
 }
 
 export default OrdersPage;
+

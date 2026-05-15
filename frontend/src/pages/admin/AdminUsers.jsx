@@ -1,5 +1,5 @@
 /**
- * PROJECT-X — Admin Pages: Users, Orders, Analytics, Coupons, Zones, Complaints, AuditLogs, Categories
+ * CARTEX — Admin Pages: Users, Orders, Analytics, Coupons, Zones, Complaints, AuditLogs, Categories
  */
 
 import { useState } from 'react';
@@ -954,3 +954,4 @@ export function AdminZones() {
 }
 
 export default AdminUsers;
+

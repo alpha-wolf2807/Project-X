@@ -1,5 +1,5 @@
 /**
- * PROJECT-X — Distributor Portal: Layout, Dashboard, Orders, Team, Inventory
+ * CARTEX — Distributor Portal: Layout, Dashboard, Orders, Team, Inventory
  */
 
 import { useState } from 'react';
@@ -36,7 +36,7 @@ export function DistributorLayout() {
         <div className="flex items-center gap-3 p-5 border-b border-white/10">
           <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-500 to-red-500 flex items-center justify-center"><span className="text-white font-black text-lg">X</span></div>
           <div>
-            <p className="font-black text-white text-sm">PROJECT-X</p>
+            <p className="font-black text-white text-sm">CARTEX</p>
             <p className="text-brand-400 text-xs">Distributor</p>
           </div>
         </div>
@@ -334,3 +334,4 @@ export function DistributorInventory() {
 }
 
 export default DistributorLayout;
+

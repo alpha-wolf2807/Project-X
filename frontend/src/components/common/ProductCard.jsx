@@ -1,5 +1,5 @@
 /**
- * PROJECT-X — Product Card Component
+ * CARTEX — Product Card Component
  *
  * Premium card with:
  * - Hover animations (GSAP + Framer Motion)
@@ -233,3 +233,4 @@ export const ProductGrid = ({ products, loading, skeletonCount = 8 }) => {
     </div>
   );
 };
+

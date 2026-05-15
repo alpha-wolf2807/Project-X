@@ -1,5 +1,5 @@
 /**
- * PROJECT-X — Products Listing Page
+ * CARTEX — Products Listing Page
  * Full-featured shop with filters, search, sort, pagination
  */
 
@@ -322,3 +322,4 @@ const activeFiltersCount = [category, flashSale, inStock, minPrice > 0 || maxPri
     </div>
   );
 }
+

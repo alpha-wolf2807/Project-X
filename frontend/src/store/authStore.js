@@ -51,7 +51,7 @@ export const useAuthStore = create(
       getRole: () => get().user?.role,
     }),
     {
-      name: 'projectx-auth',
+      name: 'Cartex-auth',
       storage: createJSONStorage(() => localStorage),
       // Only persist non-sensitive data
       partialize: (state) => ({
@@ -62,4 +62,5 @@ export const useAuthStore = create(
     }
   )
 );
+
 

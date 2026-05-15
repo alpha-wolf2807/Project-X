@@ -1,5 +1,5 @@
 /**
- * PROJECT-X — Common UI Components
+ * CARTEX — Common UI Components
  */
 
 import { motion, AnimatePresence } from 'framer-motion';
@@ -399,3 +399,4 @@ export const Table = ({ headers, children, loading, emptyState }) => (
     {!loading && !children?.length && emptyState}
   </div>
 );
+

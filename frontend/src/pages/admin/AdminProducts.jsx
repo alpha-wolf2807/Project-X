@@ -1,5 +1,5 @@
 /**
- * PROJECT-X — Admin Products Page
+ * CARTEX — Admin Products Page
  * Full product management with CRUD, bulk upload, flash sales, image management
  */
 
@@ -446,3 +446,4 @@ export default function AdminProducts() {
     </div>
   );
 }
+

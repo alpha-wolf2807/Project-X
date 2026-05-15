@@ -1,5 +1,5 @@
 /**
- * PROJECT-X — Customer Layout
+ * CARTEX — Customer Layout
  *
  * Premium layout with:
  * - Sticky glassmorphism navbar
@@ -308,7 +308,7 @@ const Navbar = () => {
             <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-500 to-red-500 flex items-center justify-center shadow-glow-orange">
               <span className="text-white font-black text-lg">X</span>
             </div>
-            <span className="font-black text-xl gradient-text hidden sm:block">PROJECT-X</span>
+            <span className="font-black text-xl gradient-text hidden sm:block">CARTEX</span>
           </Link>
 
           {/* Nav links */}
@@ -479,3 +479,4 @@ export default function CustomerLayout() {
     </div>
   );
 }
+

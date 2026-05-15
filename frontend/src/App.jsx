@@ -1,5 +1,5 @@
 /**
- * PROJECT-X — App Router
+ * CARTEX — App Router
  *
  * 5 separate portals with RBAC route protection.
  * Lazy loading for code splitting by portal.
@@ -230,3 +230,4 @@ export default function App() {
     </>
   );
 }
+

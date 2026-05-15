@@ -52,7 +52,7 @@ export const useCartStore = create(
       getTotalSavings: () => get().getMRPTotal() - get().getSubtotal(),
     }),
     {
-      name: 'projectx-cart',
+      name: 'Cartex-cart',
       storage: createJSONStorage(() => localStorage),
     }
   )
@@ -107,4 +107,5 @@ export const useNotifStore = create((set, get) => ({
     unreadCount: 0,
   })),
 }));
+
 

@@ -1,5 +1,5 @@
 /**
- * PROJECT-X — Customer Home Page
+ * CARTEX — Customer Home Page
  *
  * Premium landing experience:
  * - Animated hero section with GSAP
@@ -317,3 +317,4 @@ export default function HomePage() {
     </div>
   );
 }
+
