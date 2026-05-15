@@ -11,7 +11,7 @@
 
 const User = require('../models/User');
 const Customer = require('../models/Customer');
-const { AuditLog, Complaint, Notification } = require('../models/index');
+const { AuditLog, Complaint, Notification, District, Locality, Zone } = require('../models/index');
 const { createNotification } = require('../services/notification.service');
 const { sendEmail } = require('../services/email.service');
 const AppError = require('../utils/AppError');
@@ -19,10 +19,32 @@ const { generateTokenPair } = require('../middleware/auth');
 
 // ── Create Distributor Account ────────────────────────────────
 exports.createDistributor = async (req, res, next) => {
-  const { name, email, phone, password, zoneId } = req.body;
+  const { name, email, phone, password, zoneId, districtId } = req.body;
 
   const exists = await User.findOne({ $or: [{ email }, { phone }] });
   if (exists) throw new AppError('User with this email/phone already exists.', 409);
+
+  if (!zoneId && !districtId) {
+    throw new AppError('Select a district or zone to assign this distributor.', 400);
+  }
+
+  let districtName;
+  let assignedZone = null;
+
+  if (districtId) {
+    const district = await District.findById(districtId);
+    if (!district) throw new AppError('District not found.', 404);
+    districtName = district.name;
+    if (!zoneId) {
+      assignedZone = await Zone.findOne({ isActive: true, districts: districtName });
+      if (!assignedZone) throw new AppError('No active zone found for selected district.', 404);
+    }
+  }
+
+  if (zoneId && !assignedZone) {
+    assignedZone = await Zone.findById(zoneId);
+    if (!assignedZone) throw new AppError('Zone not found.', 404);
+  }
 
   const user = await User.create({
     name,
@@ -30,15 +52,14 @@ exports.createDistributor = async (req, res, next) => {
     phone,
     password,
     role: 'distributor',
-    zone: zoneId,
+    zone: assignedZone?._id,
+    district: districtName,
     isEmailVerified: true, // Admin-created accounts are pre-verified
     isPhoneVerified: true,
   });
 
-  // Assign to zone
-  if (zoneId) {
-    const { Zone } = require('../models/index');
-    await Zone.findByIdAndUpdate(zoneId, { distributor: user._id });
+  if (assignedZone) {
+    await Zone.findByIdAndUpdate(assignedZone._id, { distributor: user._id });
   }
 
   // Send welcome email with credentials
@@ -56,7 +77,7 @@ exports.createDistributor = async (req, res, next) => {
     performedBy: req.user._id,
     performedByRole: 'admin',
     ipAddress: req.ip,
-    changes: { after: { name, email, role: 'distributor', zone: zoneId } },
+    changes: { after: { name, email, role: 'distributor', zone: assignedZone?._id, district: districtName } },
   });
 
   res.status(201).json({
@@ -68,23 +89,61 @@ exports.createDistributor = async (req, res, next) => {
 
 // ── Create Delivery Dude Account ──────────────────────────────
 exports.createDeliveryDude = async (req, res, next) => {
-  const { name, email, phone, password, zoneId } = req.body;
+  const { name, email, phone, password, zoneId, districtId, localityId } = req.body;
 
   const exists = await User.findOne({ $or: [{ email }, { phone }] });
   if (exists) throw new AppError('User with this email/phone already exists.', 409);
 
+  if (!zoneId && !districtId && !localityId) {
+    throw new AppError('Select a district or locality to assign this delivery dude.', 400);
+  }
+
+  let districtName;
+  let localityName;
+  let assignedZone = null;
+
+  if (localityId) {
+    const locality = await Locality.findById(localityId).populate('district', 'name');
+    if (!locality) throw new AppError('Locality not found.', 404);
+    localityName = locality.name;
+    districtName = locality.district?.name;
+    if (!zoneId) {
+      assignedZone = await Zone.findOne({ isActive: true, localities: localityName });
+    }
+  }
+
+  if (!assignedZone && districtId) {
+    const district = await District.findById(districtId);
+    if (!district) throw new AppError('District not found.', 404);
+    districtName = district.name;
+    if (!zoneId) {
+      assignedZone = await Zone.findOne({ isActive: true, districts: districtName });
+    }
+  }
+
+  if (zoneId && !assignedZone) {
+    assignedZone = await Zone.findById(zoneId);
+    if (!assignedZone) throw new AppError('Zone not found.', 404);
+  }
+
+  if (!assignedZone) {
+    throw new AppError('No active zone found for selected district or locality.', 404);
+  }
+
   const user = await User.create({
-    name, email, phone, password,
+    name,
+    email,
+    phone,
+    password,
     role: 'delivery',
-    zone: zoneId,
+    zone: assignedZone._id,
+    district: districtName,
+    locality: localityName,
     isEmailVerified: true,
     isPhoneVerified: true,
   });
 
-  if (zoneId) {
-    const { Zone } = require('../models/index');
-    await Zone.findByIdAndUpdate(zoneId, { $addToSet: { deliveryDudes: user._id } });
-  }
+  await Zone.findByIdAndUpdate(assignedZone._id, { $addToSet: { deliveryDudes: user._id } });
 
   await AuditLog.create({
     action: 'user.delivery_created',
@@ -93,6 +152,7 @@ exports.createDeliveryDude = async (req, res, next) => {
     performedBy: req.user._id,
     performedByRole: 'admin',
     ipAddress: req.ip,
+    changes: { after: { name, email, role: 'delivery', zone: assignedZone._id, district: districtName, locality: localityName } },
   });
 
   res.status(201).json({ success: true, message: `Delivery dude account created.`, data: { user } });

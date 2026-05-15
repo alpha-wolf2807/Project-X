@@ -2,7 +2,7 @@
  * CARTEX — Admin Pages: Users, Orders, Analytics, Coupons, Zones, Complaints, AuditLogs, Categories
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
@@ -36,16 +36,37 @@ export function AdminUsers() {
     staleTime: 30 * 60 * 1000,
   });
 
+  const { data: districts = [] } = useQuery({
+    queryKey: ['districts'],
+    queryFn: districtsApi.getAll,
+    select: (d) => d.data.districts,
+    staleTime: 30 * 60 * 1000,
+  });
+
+  const { register: regSuspend, handleSubmit: handleSuspend, reset: resetSuspend } = useForm();
+  const { register: regWarn, handleSubmit: handleWarn, reset: resetWarn } = useForm();
+  const { register: regDistrib, handleSubmit: handleDistrib, reset: resetDistrib, watch: watchDistrib } = useForm();
+  const { register: regDeliv, handleSubmit: handleDeliv, reset: resetDeliv, watch: watchDeliv, setValue: setDelivValue } = useForm();
+
+  const selectedDistributorDistrict = watchDistrib('districtId');
+  const selectedDeliveryDistrict = watchDeliv('districtId');
+
+  useEffect(() => {
+    setDelivValue('localityId', '');
+  }, [selectedDeliveryDistrict, setDelivValue]);
+
+  const { data: deliveryLocalities = [] } = useQuery({
+    queryKey: ['localities', selectedDeliveryDistrict],
+    enabled: Boolean(selectedDeliveryDistrict),
+    queryFn: () => localitiesApi.getByDistrict(selectedDeliveryDistrict),
+    select: (d) => d.data.localities,
+  });
+
   const { data, isLoading } = useQuery({
     queryKey: ['admin-users', { search: debouncedSearch, role, status, page }],
     queryFn: () => adminApi.getUsers({ search: debouncedSearch, role, status, page, limit: 20 }),
     select: (d) => d.data,
   });
-
-  const { register: regSuspend, handleSubmit: handleSuspend, reset: resetSuspend } = useForm();
-  const { register: regWarn, handleSubmit: handleWarn, reset: resetWarn } = useForm();
-  const { register: regDistrib, handleSubmit: handleDistrib, reset: resetDistrib } = useForm();
-  const { register: regDeliv, handleSubmit: handleDeliv, reset: resetDeliv } = useForm();
 
   const suspendMutation = useMutation({
     mutationFn: ({ id, data }) => adminApi.suspendUser(id, data),
@@ -245,11 +266,11 @@ export function AdminUsers() {
           <Input label="Phone *" {...regDistrib('phone', { required: true })} />
           <Input label="Password *" type="password" {...regDistrib('password', { required: true, minLength: 8 })} />
           <div>
-            <label className="text-sm text-white/60 block mb-1.5">Assigned Zone</label>
-            <select className="input w-full" {...regDistrib('zoneId', { required: 'Select a zone' })}>
-              <option value="">Select zone</option>
-              {zones.map((zone) => (
-                <option key={zone._id} value={zone._id}>{zone.name}</option>
+            <label className="text-sm text-white/60 block mb-1.5">Assigned District</label>
+            <select className="input w-full" {...regDistrib('districtId', { required: 'Select a district' })}>
+              <option value="">Select district</option>
+              {districts.map((district) => (
+                <option key={district._id} value={district._id}>{district.name}</option>
               ))}
             </select>
           </div>
@@ -264,11 +285,20 @@ export function AdminUsers() {
           <Input label="Phone *" {...regDeliv('phone', { required: true })} />
           <Input label="Password *" type="password" {...regDeliv('password', { required: true, minLength: 8 })} />
           <div>
-            <label className="text-sm text-white/60 block mb-1.5">Assigned Zone</label>
-            <select className="input w-full" {...regDeliv('zoneId', { required: 'Select a zone' })}>
-              <option value="">Select zone</option>
-              {zones.map((zone) => (
-                <option key={zone._id} value={zone._id}>{zone.name}</option>
+            <label className="text-sm text-white/60 block mb-1.5">Assigned District</label>
+            <select className="input w-full" {...regDeliv('districtId', { required: 'Select a district' })}>
+              <option value="">Select district</option>
+              {districts.map((district) => (
+                <option key={district._id} value={district._id}>{district.name}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="text-sm text-white/60 block mb-1.5">Assigned Locality</label>
+            <select className="input w-full" {...regDeliv('localityId', { required: 'Select a locality' })} disabled={!selectedDeliveryDistrict}>
+              <option value="">Select locality</option>
+              {deliveryLocalities.map((locality) => (
+                <option key={locality._id} value={locality._id}>{locality.name}</option>
               ))}
             </select>
           </div>

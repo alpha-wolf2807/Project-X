@@ -70,6 +70,8 @@ const userSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Zone',
   },
+  district: { type: String, index: true },
+  locality: { type: String, index: true },
 
   // ── Security ──────────────────────────────────────────────
   refreshTokenHash: { type: String, select: false },
