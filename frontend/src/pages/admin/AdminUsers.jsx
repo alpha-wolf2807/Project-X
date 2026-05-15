@@ -47,18 +47,31 @@ export function AdminUsers() {
   const { register: regWarn, handleSubmit: handleWarn, reset: resetWarn } = useForm();
   const { register: regDistrib, handleSubmit: handleDistrib, reset: resetDistrib, watch: watchDistrib } = useForm();
   const { register: regDeliv, handleSubmit: handleDeliv, reset: resetDeliv, watch: watchDeliv, setValue: setDelivValue } = useForm();
+  const { register: regSupport, handleSubmit: handleSupport, reset: resetSupport, watch: watchSupport, setValue: setSupportValue } = useForm();
 
   const selectedDistributorDistrict = watchDistrib('districtId');
   const selectedDeliveryDistrict = watchDeliv('districtId');
+  const selectedSupportDistrict = watchSupport('districtId');
 
   useEffect(() => {
     setDelivValue('localityId', '');
   }, [selectedDeliveryDistrict, setDelivValue]);
 
+  useEffect(() => {
+    setSupportValue('localityId', '');
+  }, [selectedSupportDistrict, setSupportValue]);
+
   const { data: deliveryLocalities = [] } = useQuery({
     queryKey: ['localities', selectedDeliveryDistrict],
     enabled: Boolean(selectedDeliveryDistrict),
     queryFn: () => localitiesApi.getByDistrict(selectedDeliveryDistrict),
+    select: (d) => d.data.localities,
+  });
+
+  const { data: supportLocalities = [] } = useQuery({
+    queryKey: ['localities', 'support', selectedSupportDistrict],
+    enabled: Boolean(selectedSupportDistrict),
+    queryFn: () => localitiesApi.getByDistrict(selectedSupportDistrict),
     select: (d) => d.data.localities,
   });
 
@@ -104,6 +117,12 @@ export function AdminUsers() {
     onError: (err) => toast.error(err.message),
   });
 
+  const createSupportMutation = useMutation({
+    mutationFn: adminApi.createSupport,
+    onSuccess: () => { queryClient.invalidateQueries(['admin-users']); toast.success('Support agent created!'); setModalType(null); resetSupport(); },
+    onError: (err) => toast.error(err.message),
+  });
+
   const roleBadge = { admin: 'purple', distributor: 'brand', delivery: 'info', customer: 'success', support: 'warning' };
 
   return (
@@ -115,6 +134,7 @@ export function AdminUsers() {
         </div>
         <div className="flex gap-3">
           <Button variant="secondary" size="sm" onClick={() => setModalType('createDelivery')} leftIcon={<Plus className="w-4 h-4" />}>Add Delivery Dude</Button>
+          <Button variant="secondary" size="sm" onClick={() => setModalType('createSupport')} leftIcon={<Plus className="w-4 h-4" />}>Add Support Agent</Button>
           <Button size="sm" onClick={() => setModalType('createDistributor')} leftIcon={<Plus className="w-4 h-4" />}>Add Distributor</Button>
         </div>
       </div>
@@ -303,6 +323,34 @@ export function AdminUsers() {
             </select>
           </div>
           <Button type="submit" loading={createDelivMutation.isPending} className="w-full">Create Delivery Dude</Button>
+        </form>
+      </Modal>
+
+      <Modal isOpen={modalType === 'createSupport'} onClose={() => setModalType(null)} title="Create Support Agent">
+        <form onSubmit={handleSupport((d) => createSupportMutation.mutate(d))} className="space-y-4">
+          <Input label="Full Name *" {...regSupport('name', { required: true })} />
+          <Input label="Email *" type="email" {...regSupport('email', { required: true })} />
+          <Input label="Phone *" {...regSupport('phone', { required: true })} />
+          <Input label="Password *" type="password" {...regSupport('password', { required: true, minLength: 8 })} />
+          <div>
+            <label className="text-sm text-white/60 block mb-1.5">Assigned District</label>
+            <select className="input w-full" {...regSupport('districtId', { required: 'Select a district' })}>
+              <option value="">Select district</option>
+              {districts.map((district) => (
+                <option key={district._id} value={district._id}>{district.name}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="text-sm text-white/60 block mb-1.5">Assigned Locality (optional)</label>
+            <select className="input w-full" {...regSupport('localityId')} disabled={!selectedSupportDistrict}>
+              <option value="">Select locality</option>
+              {supportLocalities.map((locality) => (
+                <option key={locality._id} value={locality._id}>{locality.name}</option>
+              ))}
+            </select>
+          </div>
+          <Button type="submit" loading={createSupportMutation.isPending} className="w-full">Create Support Agent</Button>
         </form>
       </Modal>
     </div>

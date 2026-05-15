@@ -25,9 +25,32 @@ complaintRouter.post('/', authorize('customer'), uploadComplaint.array('proofIma
     proofImages,
   });
 
-  // Notify support team
-  const { User } = require('../models/User');
-  const supportUsers = await require('../models/User').find({ role: 'support', isActive: true });
+  // Route complaints to the region's support agents
+  const User = require('../models/User');
+  const Customer = require('../models/Customer');
+  const customerProfile = await Customer.findOne({ user: req.user._id }).select('district locality');
+
+  const supportFilter = { role: 'support', isActive: true };
+  if (customerProfile?.locality) {
+    supportFilter.locality = customerProfile.locality;
+  } else if (customerProfile?.district) {
+    supportFilter.district = customerProfile.district;
+  }
+
+  let supportUsers = await User.find(supportFilter);
+  if (!supportUsers.length && customerProfile?.district) {
+    supportUsers = await User.find({ role: 'support', isActive: true, district: customerProfile.district });
+  }
+  if (!supportUsers.length) {
+    supportUsers = await User.find({ role: 'support', isActive: true });
+  }
+
+  if (supportUsers.length > 0) {
+    complaint.assignedTo = supportUsers[0]._id;
+    complaint.status = 'assigned';
+    await complaint.save();
+  }
+
   for (const s of supportUsers) {
     await createNotification({
       recipient: s._id,

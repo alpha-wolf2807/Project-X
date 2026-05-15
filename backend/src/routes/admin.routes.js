@@ -10,6 +10,7 @@ router.use(protect, authorize('admin'));
 
 router.post('/distributors', ctrl.createDistributor);
 router.post('/delivery-dudes', ctrl.createDeliveryDude);
+router.post('/support-agents', ctrl.createSupport);
 router.get('/users', ctrl.getUsers);
 router.get('/users/:id', ctrl.getUserDetail);
 router.post('/users/:id/suspend', ctrl.suspendUser);

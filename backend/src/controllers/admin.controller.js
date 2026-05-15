@@ -158,6 +158,58 @@ exports.createDeliveryDude = async (req, res, next) => {
   res.status(201).json({ success: true, message: `Delivery dude account created.`, data: { user } });
 };
 
+// ── Create Support Agent Account ──────────────────────────────
+exports.createSupport = async (req, res, next) => {
+  const { name, email, phone, password, districtId, localityId } = req.body;
+
+  const exists = await User.findOne({ $or: [{ email }, { phone }] });
+  if (exists) throw new AppError('User with this email/phone already exists.', 409);
+
+  if (!districtId && !localityId) {
+    throw new AppError('Select a district or locality to assign this support agent.', 400);
+  }
+
+  let districtName;
+  let localityName;
+
+  if (localityId) {
+    const locality = await Locality.findById(localityId).populate('district', 'name');
+    if (!locality) throw new AppError('Locality not found.', 404);
+    localityName = locality.name;
+    districtName = locality.district?.name;
+  }
+
+  if (!districtName && districtId) {
+    const district = await District.findById(districtId);
+    if (!district) throw new AppError('District not found.', 404);
+    districtName = district.name;
+  }
+
+  const user = await User.create({
+    name,
+    email,
+    phone,
+    password,
+    role: 'support',
+    district: districtName,
+    locality: localityName,
+    isEmailVerified: true,
+    isPhoneVerified: true,
+  });
+
+  await AuditLog.create({
+    action: 'user.support_created',
+    resource: 'User',
+    resourceId: user._id,
+    performedBy: req.user._id,
+    performedByRole: 'admin',
+    ipAddress: req.ip,
+    changes: { after: { name, email, role: 'support', district: districtName, locality: localityName } },
+  });
+
+  res.status(201).json({ success: true, message: `Support agent account created.`, data: { user } });
+};
+
 // ── Suspend User ──────────────────────────────────────────────
 exports.suspendUser = async (req, res, next) => {
   const { reason, durationDays } = req.body;

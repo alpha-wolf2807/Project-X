@@ -215,6 +215,7 @@ export const couponsApi = {
 export const adminApi = {
   createDistributor: (data) => api.post('/admin/distributors', data),
   createDeliveryDude: (data) => api.post('/admin/delivery-dudes', data),
+  createSupport: (data) => api.post('/admin/support-agents', data),
   getUsers: (params) => api.get('/admin/users', { params }),
   getUserDetail: (id) => api.get(`/admin/users/${id}`),
   suspendUser: (id, data) => api.post(`/admin/users/${id}/suspend`, data),
