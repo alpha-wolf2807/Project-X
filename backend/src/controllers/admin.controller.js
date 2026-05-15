@@ -22,72 +22,41 @@ const buildExactMatchRegex = (value) => {
   return { $regex: `^${escaped}$`, $options: 'i' };
 };
 
-// Helper to find zone by district (tries name and ID matching with logging)
+// Helper to find zone by district (tries name and ID matching)
 const findZoneByDistrict = async (districtId, districtName) => {
-  // Get all active zones for debugging
-  const allZones = await Zone.find({ isActive: true }).select('name districts');
-  console.log(`[DEBUG] findZoneByDistrict: Looking for "${districtName}" (ID: ${districtId})`);
-  console.log(`[DEBUG] Active zones:`, allZones.map(z => ({ name: z.name, districts: z.districts })));
-
   // Try 1: Simple exact string match in array
   let zone = await Zone.findOne({
     isActive: true,
     districts: districtName
   });
-  if (zone) {
-    console.log(`[DEBUG] Found by exact match: ${zone.name}`);
-    return zone;
-  }
+  if (zone) return zone;
 
   // Try 2: Case-insensitive regex on array element
   zone = await Zone.findOne({
     isActive: true,
     districts: { $regex: `^${districtName}$`, $options: 'i' }
   });
-  if (zone) {
-    console.log(`[DEBUG] Found by case-insensitive regex: ${zone.name}`);
-    return zone;
-  }
+  if (zone) return zone;
 
-  // Try 3: Any zone that has districts array populated
-  zone = await Zone.findOne({
-    isActive: true,
-    districts: { $exists: true, $ne: [] }
-  });
-  if (zone) {
-    console.log(`[DEBUG] Warning: Returning first zone with districts as fallback: ${zone.name}`);
-    return zone;
-  }
-
-  console.log(`[DEBUG] No zone found for district "${districtName}"`);
   return null;
 };
 
 // Helper to find zone by locality (tries name and ID matching)
 const findZoneByLocality = async (localityId, localityName) => {
-  console.log(`[DEBUG] findZoneByLocality: Looking for "${localityName}" (ID: ${localityId})`);
-
   // Try 1: Simple exact string match
   let zone = await Zone.findOne({
     isActive: true,
     localities: localityName
   });
-  if (zone) {
-    console.log(`[DEBUG] Found by exact match: ${zone.name}`);
-    return zone;
-  }
+  if (zone) return zone;
 
   // Try 2: Case-insensitive regex
   zone = await Zone.findOne({
     isActive: true,
     localities: { $regex: `^${localityName}$`, $options: 'i' }
   });
-  if (zone) {
-    console.log(`[DEBUG] Found by case-insensitive regex: ${zone.name}`);
-    return zone;
-  }
+  if (zone) return zone;
 
-  console.log(`[DEBUG] No zone found for locality "${localityName}"`);
   return null;
 };
 
@@ -98,25 +67,25 @@ exports.createDistributor = async (req, res, next) => {
   const exists = await User.findOne({ $or: [{ email }, { phone }] });
   if (exists) throw new AppError('User with this email/phone already exists.', 409);
 
-  if (!zoneId && !districtId) {
-    throw new AppError('Select a district or zone to assign this distributor.', 400);
-  }
-
   let districtName;
   let assignedZone = null;
 
+  // If district is provided, get its name
   if (districtId) {
     const district = await District.findById(districtId);
     if (!district) throw new AppError('District not found.', 404);
     districtName = district.name;
+
+    // Try to find a zone with this district (optional - if it doesn't exist, still create distributor)
     if (!zoneId) {
       assignedZone = await findZoneByDistrict(districtId, districtName);
       if (!assignedZone) {
-        throw new AppError(`No active zone found for district "${districtName}". Please assign this district to a zone first.`, 404);
+        console.log(`[WARN] No zone found for district "${districtName}", creating distributor without zone assignment`);
       }
     }
   }
 
+  // If zoneId is explicitly provided, use it
   if (zoneId && !assignedZone) {
     assignedZone = await Zone.findById(zoneId);
     if (!assignedZone) throw new AppError('Zone not found.', 404);
@@ -134,6 +103,7 @@ exports.createDistributor = async (req, res, next) => {
     isPhoneVerified: true,
   });
 
+  // If zone was assigned, update it with the distributor
   if (assignedZone) {
     await Zone.findByIdAndUpdate(assignedZone._id, { distributor: user._id });
   }
@@ -158,7 +128,9 @@ exports.createDistributor = async (req, res, next) => {
 
   res.status(201).json({
     success: true,
-    message: `Distributor account created for ${name}.`,
+    message: assignedZone 
+      ? `Distributor account created for ${name} and assigned to zone "${assignedZone.name}".`
+      : `Distributor account created for ${name}. Note: No zone found for this district. You can assign a zone later.`,
     data: { user },
   });
 };
@@ -185,6 +157,9 @@ exports.createDeliveryDude = async (req, res, next) => {
     districtName = locality.district?.name;
     if (!zoneId) {
       assignedZone = await findZoneByLocality(localityId, localityName);
+      if (!assignedZone) {
+        console.log(`[WARN] No zone found for locality "${localityName}", creating delivery dude without zone assignment`);
+      }
     }
   }
 
@@ -194,6 +169,9 @@ exports.createDeliveryDude = async (req, res, next) => {
     districtName = district.name;
     if (!zoneId) {
       assignedZone = await findZoneByDistrict(districtId, districtName);
+      if (!assignedZone) {
+        console.log(`[WARN] No zone found for district "${districtName}", creating delivery dude without zone assignment`);
+      }
     }
   }
 
@@ -202,24 +180,22 @@ exports.createDeliveryDude = async (req, res, next) => {
     if (!assignedZone) throw new AppError('Zone not found.', 404);
   }
 
-  if (!assignedZone) {
-    throw new AppError('No active zone found for selected district or locality.', 404);
-  }
-
   const user = await User.create({
     name,
     email,
     phone,
     password,
     role: 'delivery',
-    zone: assignedZone._id,
+    zone: assignedZone?._id,
     district: districtName,
     locality: localityName,
     isEmailVerified: true,
     isPhoneVerified: true,
   });
 
-  await Zone.findByIdAndUpdate(assignedZone._id, { $addToSet: { deliveryDudes: user._id } });
+  if (assignedZone) {
+    await Zone.findByIdAndUpdate(assignedZone._id, { $addToSet: { deliveryDudes: user._id } });
+  }
 
   await AuditLog.create({
     action: 'user.delivery_created',
@@ -228,10 +204,16 @@ exports.createDeliveryDude = async (req, res, next) => {
     performedBy: req.user._id,
     performedByRole: 'admin',
     ipAddress: req.ip,
-    changes: { after: { name, email, role: 'delivery', zone: assignedZone._id, district: districtName, locality: localityName } },
+    changes: { after: { name, email, role: 'delivery', zone: assignedZone?._id, district: districtName, locality: localityName } },
   });
 
-  res.status(201).json({ success: true, message: `Delivery dude account created.`, data: { user } });
+  res.status(201).json({ 
+    success: true, 
+    message: assignedZone 
+      ? `Delivery dude account created and assigned to zone "${assignedZone.name}".`
+      : `Delivery dude account created. Note: No zone found for this district/locality. You can assign a zone later.`,
+    data: { user } 
+  });
 };
 
 // ── Create Support Agent Account ──────────────────────────────
