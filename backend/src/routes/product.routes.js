@@ -1,5 +1,5 @@
 /**
- * PROJECT-X — Product Routes
+ * CARTEX — Product Routes
  */
 const express = require('express');
 const router = express.Router();
@@ -27,3 +27,4 @@ router.patch('/:id/flash-sale', protect, authorize('admin'), ctrl.toggleFlashSal
 router.patch('/:id/out-of-stock', protect, authorize('admin'), ctrl.toggleOutOfStock);
 
 module.exports = router;
+

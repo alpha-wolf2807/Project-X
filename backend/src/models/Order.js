@@ -1,5 +1,5 @@
 /**
- * PROJECT-X — Order Model
+ * CARTEX — Order Model
  *
  * The central business entity. Tracks the complete lifecycle of an order:
  * Customer → Distributor → Delivery Dude → Customer
@@ -269,3 +269,4 @@ orderSchema.virtual('isDeliverable').get(function () {
 });
 
 module.exports = mongoose.model('Order', orderSchema);
+

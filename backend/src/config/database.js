@@ -1,5 +1,5 @@
 /**
- * PROJECT-X — MongoDB Connection Configuration
+ * CARTEX — MongoDB Connection Configuration
  *
  * Uses Mongoose with production-grade options:
  * - Connection pooling for high concurrency
@@ -48,3 +48,4 @@ const connectDB = async () => {
 };
 
 module.exports = { connectDB };
+

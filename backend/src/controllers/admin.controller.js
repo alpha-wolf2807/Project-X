@@ -1,5 +1,5 @@
 /**
- * PROJECT-X — Admin Controller
+ * CARTEX — Admin Controller
  *
  * Platform-wide admin operations:
  * - User management (suspend, warn, remove)
@@ -44,7 +44,7 @@ exports.createDistributor = async (req, res, next) => {
   // Send welcome email with credentials
   await sendEmail({
     to: email,
-    subject: '🎉 You\'re now a Project-X Distributor!',
+    subject: '🎉 You\'re now a CARTEX Distributor!',
     template: 'email_verify',
     data: { name, otp: 'Your account has been created. Use the password set by admin.' },
   });
@@ -390,3 +390,4 @@ exports.processRefund = async (req, res, next) => {
 
   res.json({ success: true, message: `Refund of ₹${amount} processed.` });
 };
+

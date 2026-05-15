@@ -1,8 +1,8 @@
 {
-  "name": "project-x-monorepo",
+  "name": "CARTEX-monorepo",
   "version": "1.0.0",
   "private": true,
-  "description": "PROJECT-X — Hyperlocal Hostel Commerce Platform",
+  "description": "CARTEX — Hyperlocal Hostel Commerce Platform",
   "scripts": {
     "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
     "dev:backend": "cd backend && npm run dev",
@@ -26,10 +26,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/yourusername/project-x.git"
+    "url": "https://github.com/yourusername/CARTEX.git"
   },
   "license": "MIT",
-  "author": "Project-X Team",
+  "author": "CARTEX Team",
   "dependencies": {
     "@cloudinary/react": "^1.14.4",
     "@cloudinary/url-gen": "^1.22.0",
@@ -39,3 +39,4 @@
     "mongoose": "^9.6.2"
   }
 }
+

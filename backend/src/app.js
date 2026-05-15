@@ -1,5 +1,5 @@
 /**
- * PROJECT-X — Express App Configuration
+ * CARTEX — Express App Configuration
  *
  * Production-ready middleware architecture
  */
@@ -55,7 +55,7 @@ app.use(
 const allowedOrigins = [
   process.env.FRONTEND_URL,
   'https://cartex-dhy4.onrender.com',
-  'https://project-x-j9go.onrender.com',
+  'https://CARTEX-j9go.onrender.com',
   'http://127.0.0.1:5173',
   'http://localhost:3000',
   'http://127.0.0.1:3000',
@@ -162,7 +162,7 @@ if (process.env.NODE_ENV === 'development') {
 app.get('/', (req, res) => {
   res.status(200).json({
     success: true,
-    message: 'PROJECT-X Backend Running Successfully 🚀'
+    message: 'CARTEX Backend Running Successfully 🚀'
   });
 });
 

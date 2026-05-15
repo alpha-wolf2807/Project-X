@@ -4,7 +4,7 @@
 module.exports = {
   apps: [
     {
-      name: 'project-x-api',
+      name: 'CARTEX-api',
       script: './backend/src/server.js',
       instances: 'max',          // Use all CPU cores
       exec_mode: 'cluster',       // Cluster mode for load balancing
@@ -30,3 +30,4 @@ module.exports = {
     },
   ],
 };
+

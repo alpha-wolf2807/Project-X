@@ -1,5 +1,5 @@
 /**
- * PROJECT-X — Admin Analytics Controller
+ * CARTEX — Admin Analytics Controller
  *
  * Provides aggregated analytics for the admin dashboard.
  * All queries are optimized with compound indexes.
@@ -361,3 +361,4 @@ exports.getFraudSummary = async (req, res, next) => {
 
   res.json({ success: true, data: { suspiciousUsers: suspicious } });
 };
+

@@ -5,7 +5,7 @@ import path from 'path';
 
 export default ({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
-  const apiTarget = env.VITE_API_URL || 'https://project-x-j9go.onrender.com';
+  const apiTarget = env.VITE_API_URL || 'https://CARTEX-j9go.onrender.com';
 
   return defineConfig({
     plugins: [react()],
@@ -45,3 +45,4 @@ export default ({ mode }) => {
   },
 });
 }
+

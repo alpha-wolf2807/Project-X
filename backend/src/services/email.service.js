@@ -1,5 +1,5 @@
 /**
- * PROJECT-X — Email Service (Nodemailer + HTML Templates)
+ * CARTEX — Email Service (Nodemailer + HTML Templates)
  */
 
 const nodemailer = require('nodemailer');
@@ -17,11 +17,11 @@ const transporter = nodemailer.createTransport({
 
 const templates = {
   email_verify: (data) => ({
-    subject: '🎉 Verify Your Project-X Account',
+    subject: '🎉 Verify Your CARTEX Account',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #0f0f0f; color: #fff; border-radius: 12px; overflow: hidden;">
         <div style="background: linear-gradient(135deg, #f97316, #ef4444); padding: 40px; text-align: center;">
-          <h1 style="margin: 0; font-size: 28px; font-weight: 900; letter-spacing: -1px;">PROJECT-X</h1>
+          <h1 style="margin: 0; font-size: 28px; font-weight: 900; letter-spacing: -1px;">CARTEX</h1>
           <p style="margin: 8px 0 0; opacity: 0.9;">Hyperlocal Hostel Commerce</p>
         </div>
         <div style="padding: 40px;">
@@ -35,18 +35,18 @@ const templates = {
           <p style="color: #888; font-size: 13px;">If you didn't create an account, ignore this email.</p>
         </div>
         <div style="background: #1a1a1a; padding: 20px; text-align: center;">
-          <p style="margin: 0; color: #555; font-size: 12px;">© 2024 Project-X. Built with ❤️ for hostellers.</p>
+          <p style="margin: 0; color: #555; font-size: 12px;">© 2024 CARTEX. Built with ❤️ for hostellers.</p>
         </div>
       </div>
     `,
   }),
 
   password_reset: (data) => ({
-    subject: '🔐 Project-X Password Reset OTP',
+    subject: '🔐 CARTEX Password Reset OTP',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #0f0f0f; color: #fff; border-radius: 12px; overflow: hidden;">
         <div style="background: linear-gradient(135deg, #f97316, #ef4444); padding: 40px; text-align: center;">
-          <h1 style="margin: 0; font-size: 28px; font-weight: 900;">PROJECT-X</h1>
+          <h1 style="margin: 0; font-size: 28px; font-weight: 900;">CARTEX</h1>
         </div>
         <div style="padding: 40px;">
           <h2 style="color: #f97316; margin-top: 0;">Password Reset Request</h2>
@@ -102,3 +102,4 @@ const sendEmail = async ({ to, subject, template, data, html }) => {
 };
 
 module.exports = { sendEmail };
+

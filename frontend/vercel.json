@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "name": "project-x-frontend",
+  "name": "CARTEX-frontend",
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "installCommand": "npm install",
@@ -45,3 +45,4 @@
     "VITE_RAZORPAY_KEY_ID": "@vite_razorpay_key_id"
   }
 }
+

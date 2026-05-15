@@ -1,5 +1,5 @@
 /**
- * PROJECT-X — Assignment Service
+ * CARTEX — Assignment Service
  *
  * Smart auto-assignment algorithm:
  * 1. Find distributor for the hostel's zone
@@ -143,3 +143,4 @@ const assignDeliveryDude = async (order, zone) => {
 };
 
 module.exports = { autoAssignDelivery, assignDeliveryDude };
+

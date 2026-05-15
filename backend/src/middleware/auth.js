@@ -1,5 +1,5 @@
 /**
- * PROJECT-X — JWT Authentication Middleware
+ * CARTEX — JWT Authentication Middleware
  *
  * Uses dual-token strategy:
  * - Access token (15min): stateless, sent in Authorization header
@@ -143,3 +143,4 @@ module.exports = {
   hashToken,
   cookieOptions,
 };
+

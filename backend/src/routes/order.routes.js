@@ -1,5 +1,5 @@
 /**
- * PROJECT-X — Order Routes
+ * CARTEX — Order Routes
  */
 const express = require('express');
 const router = express.Router();
@@ -29,6 +29,7 @@ router.post('/:id/verify-otp', authorize('delivery'), ctrl.verifyDeliveryOTP);
 module.exports = router;
 
 /**
- * PROJECT-X — Payment Routes (separate file inline for brevity)
+ * CARTEX — Payment Routes (separate file inline for brevity)
  */
 // payment.routes.js
+

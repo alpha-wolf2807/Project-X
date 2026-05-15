@@ -1,5 +1,5 @@
 /**
- * PROJECT-X — Backend Test Suite
+ * CARTEX — Backend Test Suite
  * Run: npm test
  */
 
@@ -175,3 +175,4 @@ describe('Security — CORS', () => {
     expect([200, 403, 500]).toContain(res.status);
   });
 });
+

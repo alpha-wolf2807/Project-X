@@ -1,7 +1,7 @@
 {
-  "name": "project-x-backend",
+  "name": "CARTEX-backend",
   "version": "1.0.0",
-  "description": "Project-X Hyperlocal Hostel Commerce Platform - Backend",
+  "description": "CARTEX Hyperlocal Hostel Commerce Platform - Backend",
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
@@ -44,3 +44,4 @@
     "supertest": "^6.3.3"
   }
 }
+

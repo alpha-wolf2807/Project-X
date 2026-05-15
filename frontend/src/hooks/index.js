@@ -1,5 +1,5 @@
 /**
- * PROJECT-X — Custom Hooks
+ * CARTEX — Custom Hooks
  */
 
 import { useEffect, useRef, useCallback, useState } from 'react';
@@ -327,3 +327,4 @@ export const useClickOutside = (ref, handler) => {
     };
   }, [ref, handler]);
 };
+

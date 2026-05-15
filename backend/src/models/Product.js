@@ -1,5 +1,5 @@
 /**
- * PROJECT-X — Product Model
+ * CARTEX — Product Model
  *
  * Full-featured product schema with:
  * - MRP vs platform price (auto strikethrough logic)
@@ -255,3 +255,4 @@ async function generateUniqueSlug(name, Model) {
 }
 
 module.exports = mongoose.model('Product', productSchema);
+

@@ -1,5 +1,5 @@
 /**
- * PROJECT-X — Database Seed Script
+ * CARTEX — Database Seed Script
  *
  * Usage: node scripts/seed.js
  * Creates: admin user, sample categories, zones, sample products
@@ -378,3 +378,4 @@ seed().catch((err) => {
   console.error('❌ Seed failed:', err);
   process.exit(1);
 });
+

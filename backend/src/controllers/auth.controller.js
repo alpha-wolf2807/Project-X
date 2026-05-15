@@ -1,5 +1,5 @@
 /**
- * PROJECT-X — Authentication Controller
+ * CARTEX — Authentication Controller
  *
  * Handles: registration, login, token refresh, OTP, logout, password reset
  * Pattern: thin controllers → fat services
@@ -155,7 +155,7 @@ exports.verifyEmail = async (req, res, next) => {
   await createNotification({
     recipient: user._id,
     type: 'system_announcement',
-    title: 'Welcome to Project-X! 🚀',
+    title: 'Welcome to CARTEX! 🚀',
     body: 'Your account is verified. Start shopping hassle-free from your hostel!',
   });
 
@@ -311,7 +311,7 @@ exports.forgotPassword = async (req, res, next) => {
   await user.setOTP(otp, 'password_reset');
   await sendEmail({
     to: email,
-    subject: '🔐 Project-X Password Reset OTP',
+    subject: '🔐 CARTEX Password Reset OTP',
     template: 'password_reset',
     data: { name: user.name, otp },
   });
@@ -357,3 +357,4 @@ exports.getMe = async (req, res, next) => {
     data: { user, ...profileData },
   });
 };
+

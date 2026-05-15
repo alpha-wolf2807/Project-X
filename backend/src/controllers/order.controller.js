@@ -1,5 +1,5 @@
 /**
- * PROJECT-X — Order Controller
+ * CARTEX — Order Controller
  *
  * Handles the complete order lifecycle:
  * Place → Confirm → Assign → Pick Up → Deliver → Verify OTP
@@ -622,3 +622,4 @@ exports.cancelOrder = async (req, res, next) => {
     data: { orderId: order._id, refundInitiated: order.payment.status === 'refunded' },
   });
 };
+

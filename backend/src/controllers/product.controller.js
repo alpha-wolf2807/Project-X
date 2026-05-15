@@ -1,5 +1,5 @@
 /**
- * PROJECT-X — Product Controller
+ * CARTEX — Product Controller
  *
  * Full product management: CRUD, bulk upload, flash sales, recommendations.
  * Admin-only mutations; public read with caching.
@@ -437,3 +437,4 @@ exports.getReviews = async (req, res, next) => {
     },
   });
 };
+

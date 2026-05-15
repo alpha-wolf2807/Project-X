@@ -1,5 +1,5 @@
 /**
- * PROJECT-X — Admin Routes
+ * CARTEX — Admin Routes
  */
 const express = require('express');
 const router = express.Router();
@@ -21,3 +21,4 @@ router.post('/orders/:orderId/refund', ctrl.processRefund);
 router.get('/audit-logs', ctrl.getAuditLogs);
 
 module.exports = router;
+

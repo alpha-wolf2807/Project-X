@@ -1,5 +1,5 @@
 /**
- * PROJECT-X — Complaint Routes
+ * CARTEX — Complaint Routes
  */
 const express = require('express');
 const complaintRouter = express.Router();
@@ -102,7 +102,7 @@ complaintRouter.patch('/:id', authorize('support', 'admin'), async (req, res, ne
 module.exports = complaintRouter;
 
 /**
- * PROJECT-X — Notification Routes
+ * CARTEX — Notification Routes
  */
 const notifRouter = express.Router();
 const { Notification } = require('../models/index');
@@ -137,7 +137,7 @@ notifRouter.patch('/:id/read', async (req, res, next) => {
 });
 
 /**
- * PROJECT-X — Chat Routes
+ * CARTEX — Chat Routes
  */
 const chatRouter = express.Router();
 const { Chat, Message } = require('../models/index');
@@ -163,7 +163,7 @@ chatRouter.get('/:roomId/messages', async (req, res, next) => {
 });
 
 /**
- * PROJECT-X — Zone Routes
+ * CARTEX — Zone Routes
  */
 const zoneRouter = express.Router();
 const { Zone } = require('../models/index');
@@ -184,7 +184,7 @@ zoneRouter.put('/:id', protect, authorize('admin'), async (req, res, next) => {
 });
 
 /**
- * PROJECT-X — Coupon Routes
+ * CARTEX — Coupon Routes
  */
 const couponRouter = express.Router();
 const { Coupon } = require('../models/index');
@@ -224,7 +224,7 @@ couponRouter.delete('/:id', protect, authorize('admin'), async (req, res, next) 
 });
 
 /**
- * PROJECT-X — Category Routes
+ * CARTEX — Category Routes
  */
 const categoryRouter = express.Router();
 const { Category } = require('../models/index');
@@ -246,7 +246,7 @@ categoryRouter.put('/:id', protect, authorize('admin'), async (req, res, next) =
 });
 
 /**
- * PROJECT-X — Distributor Routes
+ * CARTEX — Distributor Routes
  */
 const distributorRouter = express.Router();
 const Order = require('../models/Order');
@@ -313,7 +313,7 @@ distributorRouter.get('/delivery-dudes', async (req, res, next) => {
 });
 
 /**
- * PROJECT-X — Delivery Dude Routes
+ * CARTEX — Delivery Dude Routes
  */
 const deliveryRouter = express.Router();
 
@@ -359,7 +359,7 @@ deliveryRouter.get('/stats', async (req, res, next) => {
 });
 
 /**
- * PROJECT-X — Support Routes
+ * CARTEX — Support Routes
  */
 const supportRouter = express.Router();
 
@@ -392,7 +392,7 @@ supportRouter.get('/stats', async (req, res, next) => {
 });
 
 /**
- * PROJECT-X — User Routes
+ * CARTEX — User Routes
  */
 const userRouter = express.Router();
 const { uploadAvatar } = require('../config/cloudinary');
@@ -505,3 +505,4 @@ module.exports = {
   supportRoutes: supportRouter,
   userRoutes: userRouter,
 };
+

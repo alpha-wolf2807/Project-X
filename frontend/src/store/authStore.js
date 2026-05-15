@@ -1,5 +1,5 @@
 /**
- * PROJECT-X — Auth Store (Zustand)
+ * CARTEX — Auth Store (Zustand)
  *
  * Persists user data in localStorage (except sensitive tokens).
  * Access token stored in memory only (XSS protection).
@@ -62,3 +62,4 @@ export const useAuthStore = create(
     }
   )
 );
+

@@ -1,5 +1,5 @@
 /**
- * PROJECT-X — Axios API Service
+ * CARTEX — Axios API Service
  *
  * Features:
  * - Base URL from env
@@ -13,7 +13,7 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 import { useAuthStore } from '@store/authStore';
 
-const rawApiUrl = import.meta.env.VITE_API_URL || 'https://project-x-j9go.onrender.com';
+const rawApiUrl = import.meta.env.VITE_API_URL || 'https://CARTEX-j9go.onrender.com';
 const normalizedApiUrl = rawApiUrl.replace(/\/$/, '').replace(/\/api\/v1$/, '');
 const BASE_URL = `${normalizedApiUrl}/api/v1`;
 
@@ -282,3 +282,4 @@ export const localitiesApi = {
 };
 
 export default api;
+

@@ -12,7 +12,7 @@ cloudinary.config({
 const productStorage = new CloudinaryStorage({
   cloudinary,
   params: {
-    folder: 'project-x/products',
+    folder: 'CARTEX/products',
     allowed_formats: ['jpg', 'jpeg', 'png', 'webp'],
     transformation: [{ width: 800, height: 800, crop: 'limit', quality: 'auto:good' }],
   },
@@ -22,7 +22,7 @@ const productStorage = new CloudinaryStorage({
 const complaintStorage = new CloudinaryStorage({
   cloudinary,
   params: {
-    folder: 'project-x/complaints',
+    folder: 'CARTEX/complaints',
     allowed_formats: ['jpg', 'jpeg', 'png', 'webp', 'pdf'],
     resource_type: 'auto',
   },
@@ -32,7 +32,7 @@ const complaintStorage = new CloudinaryStorage({
 const avatarStorage = new CloudinaryStorage({
   cloudinary,
   params: {
-    folder: 'project-x/avatars',
+    folder: 'CARTEX/avatars',
     allowed_formats: ['jpg', 'jpeg', 'png', 'webp'],
     transformation: [{ width: 200, height: 200, crop: 'fill', gravity: 'face', quality: 'auto' }],
   },
@@ -53,3 +53,4 @@ module.exports = {
   uploadAvatar: multer({ storage: avatarStorage, fileFilter, limits: { fileSize: 2 * 1024 * 1024 } }),
   cloudinary,
 };
+

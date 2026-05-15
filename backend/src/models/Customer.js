@@ -1,5 +1,5 @@
 /**
- * PROJECT-X — Customer Profile Model
+ * CARTEX — Customer Profile Model
  *
  * Extended profile for customers. Linked 1:1 to User document.
  * Tracks hostel info, addresses, preferences, cart, and purchase history.
@@ -130,3 +130,4 @@ customerSchema.methods.updateLoyaltyTier = function () {
 };
 
 module.exports = mongoose.model('Customer', customerSchema);
+

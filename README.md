@@ -1,13 +1,13 @@
-# PROJECT-X — Hyperlocal Hostel Commerce Platform
+# CARTEX — Hyperlocal Hostel Commerce Platform
 
 > **Enterprise-grade, startup-ready** hyperlocal delivery platform built for hostellers.
 > Inspired by Zepto, Blinkit, Swiggy Instamart, and Amazon combined.
 
 ---
 
-## 🚀 What is Project-X?
+## 🚀 What is CARTEX?
 
-Project-X solves a real problem: **hostellers cannot easily access snacks, groceries, and personal items** without leaving campus. Day scholars and distributors act as intermediaries to:
+CARTEX solves a real problem: **hostellers cannot easily access snacks, groceries, and personal items** without leaving campus. Day scholars and distributors act as intermediaries to:
 
 - Procure products at discounted rates (below MRP)
 - Deliver to hostel students at platform prices
@@ -24,7 +24,7 @@ MRP = ₹30 | Purchase cost = ₹25 | Platform price = ₹28 | Profit = ₹3 + c
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                        PROJECT-X PLATFORM                       │
+│                        CARTEX PLATFORM                       │
 ├────────────────┬───────────────────────────────────────────────┤
 │   FRONTEND     │               BACKEND (Node.js)               │
 │   React + Vite │                                               │
@@ -65,7 +65,7 @@ MRP = ₹30 | Purchase cost = ₹25 | Platform price = ₹28 | Profit = ₹3 + c
 ## 📁 Project Structure
 
 ```
-project-x/
+CARTEX/
 ├── backend/
 │   ├── src/
 │   │   ├── config/           # DB, Redis, Cloudinary
@@ -277,11 +277,11 @@ sudo apt update && sudo apt install -y nodejs npm
 npm install -g pm2
 
 git clone your-repo
-cd project-x/backend
+cd CARTEX/backend
 npm install
 cp .env.example .env && nano .env
 
-pm2 start src/server.js --name project-x
+pm2 start src/server.js --name CARTEX
 pm2 startup
 pm2 save
 
@@ -440,4 +440,5 @@ Built with ❤️ for hostellers everywhere.
 
 ---
 
-*Project-X — Built like a real startup preparing for millions of users.*
+*CARTEX — Built like a real startup preparing for millions of users.*
+

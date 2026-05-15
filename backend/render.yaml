@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: project-x-backend
+    name: CARTEX-backend
     env: node
     region: singapore
     plan: free
@@ -40,3 +40,4 @@ services:
         value: 12
       - key: OTP_EXPIRES_MINUTES
         value: 10
+

@@ -1,5 +1,5 @@
 /**
- * PROJECT-X — Auth Routes
+ * CARTEX — Auth Routes
  */
 const express = require('express');
 const router = express.Router();
@@ -48,3 +48,4 @@ router.post('/reset-password', [
 router.get('/me', protect, ctrl.getMe);
 
 module.exports = router;
+

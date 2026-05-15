@@ -1,5 +1,5 @@
 /**
- * PROJECT-X — Notification Service
+ * CARTEX — Notification Service
  */
 
 const { Notification } = require('../models/index');
@@ -35,3 +35,4 @@ const createNotification = async ({ recipient, type, title, body, data, channel 
 };
 
 module.exports = { createNotification };
+

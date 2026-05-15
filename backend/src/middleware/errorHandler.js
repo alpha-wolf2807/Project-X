@@ -1,5 +1,5 @@
 /**
- * PROJECT-X — Error Handling Middleware
+ * CARTEX — Error Handling Middleware
  *
  * Centralized error handling with:
  * - Operational vs programmer errors distinction
@@ -102,3 +102,4 @@ const errorHandler = (err, req, res, next) => {
 };
 
 module.exports = { AppError, errorHandler, notFound };
+

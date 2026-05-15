@@ -1,5 +1,5 @@
 /**
- * PROJECT-X — Cart Store (Zustand)
+ * CARTEX — Cart Store (Zustand)
  */
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
@@ -59,7 +59,7 @@ export const useCartStore = create(
 );
 
 /**
- * PROJECT-X — UI Store (Zustand)
+ * CARTEX — UI Store (Zustand)
  */
 export const useUIStore = create((set, get) => ({
   theme: 'dark',
@@ -83,7 +83,7 @@ export const useUIStore = create((set, get) => ({
 }));
 
 /**
- * PROJECT-X — Notification Store (Zustand)
+ * CARTEX — Notification Store (Zustand)
  */
 export const useNotifStore = create((set, get) => ({
   notifications: [],
@@ -107,3 +107,4 @@ export const useNotifStore = create((set, get) => ({
     unreadCount: 0,
   })),
 }));
+

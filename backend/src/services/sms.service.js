@@ -1,5 +1,5 @@
 /**
- * PROJECT-X — SMS Service (Twilio)
+ * CARTEX — SMS Service (Twilio)
  *
  * Used for OTP delivery via SMS as fallback/primary for phone verification.
  * Gracefully degrades if Twilio is not configured.
@@ -40,8 +40,9 @@ const sendSMS = async ({ to, message }) => {
 const sendOTPSMS = async (phone, otp) => {
   await sendSMS({
     to: phone,
-    message: `Your Project-X OTP is: ${otp}. Valid for 10 minutes. Do NOT share with anyone. -Project-X`,
+    message: `Your CARTEX OTP is: ${otp}. Valid for 10 minutes. Do NOT share with anyone. -CARTEX`,
   });
 };
 
 module.exports = { sendSMS, sendOTPSMS };
+

@@ -1,5 +1,5 @@
 /**
- * PROJECT-X — Analytics Routes
+ * CARTEX — Analytics Routes
  */
 const express = require('express');
 const router = express.Router();
@@ -17,3 +17,4 @@ router.get('/refunds', ctrl.getRefundAnalytics);
 router.get('/fraud', ctrl.getFraudSummary);
 
 module.exports = router;
+

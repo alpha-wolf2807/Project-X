@@ -1,5 +1,5 @@
 /**
- * PROJECT-X — Payment Service (Razorpay)
+ * CARTEX — Payment Service (Razorpay)
  *
  * Handles Razorpay order creation and payment verification.
  * Webhook signature verification for server-side confirmation.
@@ -93,3 +93,4 @@ module.exports = {
   verifyWebhookSignature,
   processRefund,
 };
+

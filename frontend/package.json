@@ -1,5 +1,5 @@
 {
-  "name": "project-x-frontend",
+  "name": "CARTEX-frontend",
   "version": "1.0.0",
   "private": true,
   "scripts": {
@@ -57,3 +57,4 @@
     "vite": "^5.0.8"
   }
 }
+

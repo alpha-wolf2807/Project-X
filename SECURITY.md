@@ -1,4 +1,4 @@
-# PROJECT-X — Security Guide
+# CARTEX — Security Guide
 
 ## Environment Variables Security Checklist
 
@@ -82,3 +82,4 @@ MongoDB Atlas:
 - [ ] PM2 or container restart policy set
 - [ ] Log rotation configured
 - [ ] Monitoring/alerting set up
+

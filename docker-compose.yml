@@ -1,7 +1,7 @@
 version: '3.9'
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-# PROJECT-X — Docker Compose (Local Development)
+# CARTEX — Docker Compose (Local Development)
 # Run: docker-compose up -d
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -116,3 +116,4 @@ volumes:
 networks:
   projectx-network:
     driver: bridge
+

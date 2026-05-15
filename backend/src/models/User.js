@@ -1,5 +1,5 @@
 /**
- * PROJECT-X — User Model
+ * CARTEX — User Model
  *
  * Central user schema with role-based access control.
  * All roles (admin, distributor, delivery, customer, support) share
@@ -213,3 +213,4 @@ userSchema.methods.clearOTP = async function () {
 };
 
 module.exports = mongoose.model('User', userSchema);
+

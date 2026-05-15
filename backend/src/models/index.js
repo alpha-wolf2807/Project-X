@@ -1,5 +1,5 @@
 /**
- * PROJECT-X — Supporting Models
+ * CARTEX — Supporting Models
  *
  * Contains: Category, Zone, Coupon, Complaint, Notification, Chat, Message, AuditLog
  */
@@ -366,3 +366,4 @@ module.exports = {
   AuditLog,
   Review,
 };
+

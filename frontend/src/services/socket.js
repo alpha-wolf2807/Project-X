@@ -1,5 +1,5 @@
 /**
- * PROJECT-X — Socket.io Client Service
+ * CARTEX — Socket.io Client Service
  *
  * Singleton socket instance with auto-reconnect.
  * Connects with JWT access token for authentication.
@@ -8,7 +8,7 @@
 import { io } from 'socket.io-client';
 import { useAuthStore } from '@store/authStore';
 
-const rawSocketUrl = import.meta.env.VITE_SOCKET_URL || import.meta.env.VITE_API_URL || 'https://project-x-j9go.onrender.com';
+const rawSocketUrl = import.meta.env.VITE_SOCKET_URL || import.meta.env.VITE_API_URL || 'https://CARTEX-j9go.onrender.com';
 const SOCKET_URL = rawSocketUrl.replace(/\/$/, '');
 
 let socket = null;
@@ -82,3 +82,4 @@ export const subscribeToZone = (zoneId) => {
 };
 
 export default { connectSocket, disconnectSocket, getSocket, joinOrderRoom, sendChatMessage, sendTyping, updateDeliveryLocation, subscribeToZone };
+
