@@ -107,20 +107,47 @@ export function AdminUsers() {
 
   const createDistribMutation = useMutation({
     mutationFn: adminApi.createDistributor,
-    onSuccess: () => { queryClient.invalidateQueries(['admin-users']); toast.success('Distributor created!'); setModalType(null); resetDistrib(); },
-    onError: (err) => toast.error(err.message),
+    onSuccess: (response) => { 
+      queryClient.invalidateQueries(['admin-users']);
+      // Reset to page 1 and clear filters to see new user
+      setPage(1);
+      setRole('distributor');
+      setSearch('');
+      toast.success(`✅ ${response.data.user.name} created as Distributor!`); 
+      setModalType(null); 
+      resetDistrib(); 
+    },
+    onError: (err) => toast.error(`❌ ${err.response?.data?.message || err.message}`),
   });
 
   const createDelivMutation = useMutation({
     mutationFn: adminApi.createDeliveryDude,
-    onSuccess: () => { queryClient.invalidateQueries(['admin-users']); toast.success('Delivery dude created!'); setModalType(null); resetDeliv(); },
-    onError: (err) => toast.error(err.message),
+    onSuccess: (response) => { 
+      queryClient.invalidateQueries(['admin-users']); 
+      // Reset to page 1 and clear filters to see new user
+      setPage(1);
+      setRole('delivery');
+      setSearch('');
+      toast.success(`✅ ${response.data.user.name} created as Delivery Dude!`); 
+      setModalType(null); 
+      resetDeliv(); 
+    },
+    onError: (err) => toast.error(`❌ ${err.response?.data?.message || err.message}`),
   });
 
   const createSupportMutation = useMutation({
     mutationFn: adminApi.createSupport,
-    onSuccess: () => { queryClient.invalidateQueries(['admin-users']); toast.success('Support agent created!'); setModalType(null); resetSupport(); },
-    onError: (err) => toast.error(err.message),
+    onSuccess: (response) => { 
+      queryClient.invalidateQueries(['admin-users']); 
+      // Reset to page 1 and clear filters to see new user
+      setPage(1);
+      setRole('support');
+      setSearch('');
+      toast.success(`✅ ${response.data.user.name} created as Support Agent!`); 
+      setModalType(null); 
+      resetSupport(); 
+    },
+    onError: (err) => toast.error(`❌ ${err.response?.data?.message || err.message}`),
   });
 
   const roleBadge = { admin: 'purple', distributor: 'brand', delivery: 'info', customer: 'success', support: 'warning' };
@@ -157,60 +184,81 @@ export function AdminUsers() {
       </div>
 
       <div className="card overflow-hidden">
+        <div className="px-4 py-3 border-b border-white/5 bg-surface-2">
+          <p className="text-white/70 text-sm font-medium">
+            🔍 Showing <span className="text-white font-bold">{data?.users?.length || 0}</span> users 
+            {role && ` • Role: ${role.toUpperCase()}`}
+            {search && ` • Search: ${search}`}
+            {role && <button onClick={() => setRole('')} className="ml-3 text-brand-400 hover:text-brand-300">Clear filters</button>}
+          </p>
+        </div>
         <table className="data-table">
           <thead>
-            <tr><th>User</th><th>Role</th><th>Status</th><th>Joined</th><th>Actions</th></tr>
+            <tr><th>User</th><th>Role</th><th>Status</th><th>District/Zone</th><th>Joined</th><th>Actions</th></tr>
           </thead>
           <tbody>
             {isLoading ? Array.from({ length: 8 }).map((_, i) => (
-              <tr key={i}>{Array.from({ length: 5 }).map((_, j) => <td key={j}><div className="h-4 bg-surface-3 rounded animate-pulse" /></td>)}</tr>
-            )) : data?.users?.map((user) => (
-              <tr key={user._id} className="group">
+              <tr key={i}>{Array.from({ length: 6 }).map((_, j) => <td key={j}><div className="h-4 bg-surface-3 rounded animate-pulse" /></td>)}</tr>
+            )) : data?.users && data.users.length > 0 ? data.users.map((user) => (
+              <tr key={user._id} className="group hover:bg-surface-2 transition-colors">
                 <td>
                   <div className="flex items-center gap-3">
                     <Avatar src={user.avatar?.url} name={user.name} size="sm" />
                     <div>
                       <p className="text-white font-medium text-sm">{user.name}</p>
                       <p className="text-white/40 text-xs">{user.email}</p>
-                      <p className="text-white/30 text-xs">{user.phone}</p>
+                      {user.phone && <p className="text-white/30 text-xs">{user.phone}</p>}
                     </div>
                   </div>
                 </td>
                 <td><Badge variant={roleBadge[user.role]}>{user.role}</Badge></td>
                 <td>
-                  {user.suspension?.isSuspended ? (
-                    <Badge variant="error">Suspended</Badge>
-                  ) : user.isActive ? (
-                    <Badge variant="success">Active</Badge>
-                  ) : (
-                    <Badge variant="default">Inactive</Badge>
-                  )}
-                  {user.warnings?.length > 0 && <div className="mt-1"><Badge variant="warning">{user.warnings.length} warning{user.warnings.length !== 1 ? 's' : ''}</Badge></div>}
+                  <div className="flex flex-col gap-1">
+                    {user.suspension?.isSuspended ? (
+                      <Badge variant="error">🚫 Suspended</Badge>
+                    ) : user.isActive ? (
+                      <Badge variant="success">✅ Active</Badge>
+                    ) : (
+                      <Badge variant="default">⊘ Inactive</Badge>
+                    )}
+                    {user.warnings?.length > 0 && <Badge variant="warning">⚠️ {user.warnings.length} warnings</Badge>}
+                  </div>
                 </td>
-                <td className="text-white/50 text-sm">{new Date(user.createdAt).toLocaleDateString('en-IN')}</td>
+                <td className="text-white/70 text-sm">
+                  {user.district && <p>📍 {user.district}</p>}
+                  {user.locality && <p className="text-white/50">└─ {user.locality}</p>}
+                  {!user.district && !user.locality && <span className="text-white/40">—</span>}
+                </td>
+                <td className="text-white/50 text-xs whitespace-nowrap">{new Date(user.createdAt).toLocaleDateString('en-IN')}</td>
                 <td>
                   <div className="flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button onClick={() => { setSelectedUser(user); setModalType('warn'); }} className="w-8 h-8 rounded-lg bg-yellow-500/20 hover:bg-yellow-500/30 flex items-center justify-center text-yellow-400 transition-colors" title="Warn">
+                    <button onClick={() => { setSelectedUser(user); setModalType('warn'); }} className="w-8 h-8 rounded-lg bg-yellow-500/20 hover:bg-yellow-500/30 flex items-center justify-center text-yellow-400 transition-colors" title="Send warning">
                       <AlertTriangle className="w-4 h-4" />
                     </button>
                     {user.suspension?.isSuspended ? (
-                      <button onClick={() => unsuspendMutation.mutate(user._id)} className="w-8 h-8 rounded-lg bg-accent-green/20 hover:bg-accent-green/30 flex items-center justify-center text-accent-green transition-colors" title="Unsuspend">
+                      <button onClick={() => unsuspendMutation.mutate(user._id)} className="w-8 h-8 rounded-lg bg-accent-green/20 hover:bg-accent-green/30 flex items-center justify-center text-accent-green transition-colors" title="Unsuspend user">
                         <UserCheck className="w-4 h-4" />
                       </button>
                     ) : (
-                      <button onClick={() => { setSelectedUser(user); setModalType('suspend'); }} className="w-8 h-8 rounded-lg bg-accent-red/20 hover:bg-accent-red/30 flex items-center justify-center text-accent-red transition-colors" title="Suspend">
+                      <button onClick={() => { setSelectedUser(user); setModalType('suspend'); }} className="w-8 h-8 rounded-lg bg-accent-red/20 hover:bg-accent-red/30 flex items-center justify-center text-accent-red transition-colors" title="Suspend user">
                         <UserX className="w-4 h-4" />
                       </button>
                     )}
                     {user.role !== 'admin' && currentUser?._id !== user._id && (
-                      <button onClick={() => { setSelectedUser(user); setModalType('deleteUser'); }} className="w-8 h-8 rounded-lg bg-red-500/20 hover:bg-red-500/30 flex items-center justify-center text-red-400 transition-colors" title="Delete">
+                      <button onClick={() => { setSelectedUser(user); setModalType('deleteUser'); }} className="w-8 h-8 rounded-lg bg-red-500/20 hover:bg-red-500/30 flex items-center justify-center text-red-400 transition-colors" title="Delete user">
                         <Trash2 className="w-4 h-4" />
                       </button>
                     )}
                   </div>
                 </td>
               </tr>
-            ))}
+            )) : (
+              <tr>
+                <td colSpan="6" className="text-center py-8">
+                  <p className="text-white/40 text-sm">No users found</p>
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
         {data?.pagination?.pages > 1 && (
@@ -279,14 +327,20 @@ export function AdminUsers() {
         </div>
       </Modal>
 
-      <Modal isOpen={modalType === 'createDistributor'} onClose={() => setModalType(null)} title="Create Distributor Account">
-        <form onSubmit={handleDistrib((d) => createDistribMutation.mutate(d))} className="space-y-4">
-          <Input label="Full Name *" {...regDistrib('name', { required: true })} />
-          <Input label="Email *" type="email" {...regDistrib('email', { required: true })} />
-          <Input label="Phone *" {...regDistrib('phone', { required: true })} />
-          <Input label="Password *" type="password" {...regDistrib('password', { required: true, minLength: 8 })} />
+      <Modal isOpen={modalType === 'createDistributor'} onClose={() => setModalType(null)} title="✨ Create Distributor Account">
+        <form onSubmit={handleDistrib((d) => {
+          if (!d.name || !d.email || !d.phone || !d.password) {
+            toast.error('Please fill all required fields');
+            return;
+          }
+          createDistribMutation.mutate(d);
+        })} className="space-y-4">
+          <Input label="Full Name *" placeholder="e.g., John Doe" {...regDistrib('name', { required: 'Name is required' })} />
+          <Input label="Email *" type="email" placeholder="e.g., john@example.com" {...regDistrib('email', { required: 'Email is required' })} />
+          <Input label="Phone *" placeholder="e.g., 9876543210" {...regDistrib('phone', { required: 'Phone is required' })} />
+          <Input label="Password *" type="password" placeholder="Min 8 characters" {...regDistrib('password', { required: 'Password is required', minLength: { value: 8, message: 'Min 8 characters' } })} />
           <div>
-            <label className="text-sm text-white/60 block mb-1.5">Assigned District</label>
+            <label className="text-sm text-white/60 block mb-1.5">Assigned District *</label>
             <select className="input w-full" {...regDistrib('districtId', { required: 'Select a district' })}>
               <option value="">Select district</option>
               {districts.map((district) => (
@@ -294,18 +348,26 @@ export function AdminUsers() {
               ))}
             </select>
           </div>
-          <Button type="submit" loading={createDistribMutation.isPending} className="w-full">Create Distributor</Button>
+          <Button type="submit" loading={createDistribMutation.isPending} disabled={createDistribMutation.isPending} className="w-full">
+            {createDistribMutation.isPending ? '⏳ Creating...' : '✅ Create Distributor'}
+          </Button>
         </form>
       </Modal>
 
-      <Modal isOpen={modalType === 'createDelivery'} onClose={() => setModalType(null)} title="Create Delivery Dude Account">
-        <form onSubmit={handleDeliv((d) => createDelivMutation.mutate(d))} className="space-y-4">
-          <Input label="Full Name *" {...regDeliv('name', { required: true })} />
-          <Input label="Email *" type="email" {...regDeliv('email', { required: true })} />
-          <Input label="Phone *" {...regDeliv('phone', { required: true })} />
-          <Input label="Password *" type="password" {...regDeliv('password', { required: true, minLength: 8 })} />
+      <Modal isOpen={modalType === 'createDelivery'} onClose={() => setModalType(null)} title="✨ Create Delivery Dude Account">
+        <form onSubmit={handleDeliv((d) => {
+          if (!d.name || !d.email || !d.phone || !d.password || !d.districtId) {
+            toast.error('Please fill all required fields');
+            return;
+          }
+          createDelivMutation.mutate(d);
+        })} className="space-y-4">
+          <Input label="Full Name *" placeholder="e.g., John Doe" {...regDeliv('name', { required: 'Name is required' })} />
+          <Input label="Email *" type="email" placeholder="e.g., john@example.com" {...regDeliv('email', { required: 'Email is required' })} />
+          <Input label="Phone *" placeholder="e.g., 9876543210" {...regDeliv('phone', { required: 'Phone is required' })} />
+          <Input label="Password *" type="password" placeholder="Min 8 characters" {...regDeliv('password', { required: 'Password is required', minLength: { value: 8, message: 'Min 8 characters' } })} />
           <div>
-            <label className="text-sm text-white/60 block mb-1.5">Assigned District</label>
+            <label className="text-sm text-white/60 block mb-1.5">Assigned District *</label>
             <select className="input w-full" {...regDeliv('districtId', { required: 'Select a district' })}>
               <option value="">Select district</option>
               {districts.map((district) => (
@@ -314,26 +376,34 @@ export function AdminUsers() {
             </select>
           </div>
           <div>
-            <label className="text-sm text-white/60 block mb-1.5">Assigned Locality</label>
-            <select className="input w-full" {...regDeliv('localityId', { required: 'Select a locality' })} disabled={!selectedDeliveryDistrict}>
+            <label className="text-sm text-white/60 block mb-1.5">Assigned Locality (Optional)</label>
+            <select className="input w-full" {...regDeliv('localityId')} disabled={!selectedDeliveryDistrict}>
               <option value="">Select locality</option>
               {deliveryLocalities.map((locality) => (
                 <option key={locality._id} value={locality._id}>{locality.name}</option>
               ))}
             </select>
           </div>
-          <Button type="submit" loading={createDelivMutation.isPending} className="w-full">Create Delivery Dude</Button>
+          <Button type="submit" loading={createDelivMutation.isPending} disabled={createDelivMutation.isPending} className="w-full">
+            {createDelivMutation.isPending ? '⏳ Creating...' : '✅ Create Delivery Dude'}
+          </Button>
         </form>
       </Modal>
 
-      <Modal isOpen={modalType === 'createSupport'} onClose={() => setModalType(null)} title="Create Support Agent">
-        <form onSubmit={handleSupport((d) => createSupportMutation.mutate(d))} className="space-y-4">
-          <Input label="Full Name *" {...regSupport('name', { required: true })} />
-          <Input label="Email *" type="email" {...regSupport('email', { required: true })} />
-          <Input label="Phone *" {...regSupport('phone', { required: true })} />
-          <Input label="Password *" type="password" {...regSupport('password', { required: true, minLength: 8 })} />
+      <Modal isOpen={modalType === 'createSupport'} onClose={() => setModalType(null)} title="✨ Create Support Agent">
+        <form onSubmit={handleSupport((d) => {
+          if (!d.name || !d.email || !d.phone || !d.password || !d.districtId) {
+            toast.error('Please fill all required fields');
+            return;
+          }
+          createSupportMutation.mutate(d);
+        })} className="space-y-4">
+          <Input label="Full Name *" placeholder="e.g., John Doe" {...regSupport('name', { required: 'Name is required' })} />
+          <Input label="Email *" type="email" placeholder="e.g., john@example.com" {...regSupport('email', { required: 'Email is required' })} />
+          <Input label="Phone *" placeholder="e.g., 9876543210" {...regSupport('phone', { required: 'Phone is required' })} />
+          <Input label="Password *" type="password" placeholder="Min 8 characters" {...regSupport('password', { required: 'Password is required', minLength: { value: 8, message: 'Min 8 characters' } })} />
           <div>
-            <label className="text-sm text-white/60 block mb-1.5">Assigned District</label>
+            <label className="text-sm text-white/60 block mb-1.5">Assigned District *</label>
             <select className="input w-full" {...regSupport('districtId', { required: 'Select a district' })}>
               <option value="">Select district</option>
               {districts.map((district) => (
@@ -342,7 +412,7 @@ export function AdminUsers() {
             </select>
           </div>
           <div>
-            <label className="text-sm text-white/60 block mb-1.5">Assigned Locality (optional)</label>
+            <label className="text-sm text-white/60 block mb-1.5">Assigned Locality (Optional)</label>
             <select className="input w-full" {...regSupport('localityId')} disabled={!selectedSupportDistrict}>
               <option value="">Select locality</option>
               {supportLocalities.map((locality) => (
@@ -350,7 +420,9 @@ export function AdminUsers() {
               ))}
             </select>
           </div>
-          <Button type="submit" loading={createSupportMutation.isPending} className="w-full">Create Support Agent</Button>
+          <Button type="submit" loading={createSupportMutation.isPending} disabled={createSupportMutation.isPending} className="w-full">
+            {createSupportMutation.isPending ? '⏳ Creating...' : '✅ Create Support Agent'}
+          </Button>
         </form>
       </Modal>
     </div>
