@@ -254,28 +254,29 @@ export function RegisterPage() {
 
   return (
     <AuthLayout title="Join CARTEX" subtitle="Shop smarter from your hostel">
-      <form onSubmit={handleSubmit((d) => mutation.mutate(d))} className="space-y-4">
-        <div className="grid grid-cols-2 gap-4">
-          <Input label="Full Name" placeholder="Arjun Sharma" leftIcon={<User className="w-4 h-4" />} error={errors.name?.message} {...register('name')} />
-          <Input label="Phone" placeholder="9876543210" leftIcon={<Phone className="w-4 h-4" />} error={errors.phone?.message} {...register('phone')} />
+      <form onSubmit={handleSubmit((d) => mutation.mutate(d))} className="space-y-6">
+        <div className="grid grid-cols-1 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <Input label="Full Name" placeholder="Arjun Sharma" leftIcon={<User className="w-4 h-4" />} error={errors.name?.message} {...register('name')} />
+            <Input label="Phone" placeholder="9876543210" leftIcon={<Phone className="w-4 h-4" />} error={errors.phone?.message} {...register('phone')} />
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <Input label="Email" type="email" placeholder="you@college.edu" leftIcon={<Mail className="w-4 h-4" />} error={errors.email?.message} {...register('email')} />
+            <Input
+              label="Password"
+              type={showPass ? 'text' : 'password'}
+              placeholder="Min 8 chars, 1 uppercase, 1 number"
+              leftIcon={<Lock className="w-4 h-4" />}
+              rightIcon={
+                <button type="button" onClick={() => setShowPass(!showPass)} className="hover:text-white transition-colors">
+                  {showPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              }
+              error={errors.password?.message}
+              {...register('password')}
+            />
+          </div>
         </div>
-
-        <Input label="Email" type="email" placeholder="you@college.edu" leftIcon={<Mail className="w-4 h-4" />} error={errors.email?.message} {...register('email')} />
-
-        <Input
-          label="Password"
-          type={showPass ? 'text' : 'password'}
-          placeholder="Min 8 chars, 1 uppercase, 1 number"
-          leftIcon={<Lock className="w-4 h-4" />}
-          rightIcon={
-            <button type="button" onClick={() => setShowPass(!showPass)} className="hover:text-white transition-colors">
-              {showPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-            </button>
-          }
-          error={errors.password?.message}
-          {...register('password')}
-        />
-
         <Input label="Hostel Name" placeholder="e.g. Boys Hostel Block A" leftIcon={<Home className="w-4 h-4" />} error={errors.hostelName?.message} {...register('hostelName')} />
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -306,9 +307,11 @@ export function RegisterPage() {
             <label className="text-sm font-semibold text-white/70 mb-2 block">Gender</label>
             <div className="grid grid-cols-3 gap-2">
               {['male', 'female', 'other'].map((option) => (
-                <label key={option} className="flex items-center gap-2 px-3 py-2 rounded-2xl bg-surface-2 border border-white/10 cursor-pointer hover:border-brand-500">
-                  <input type="radio" value={option} {...register('gender')} className="hidden" />
-                  <span className="text-sm capitalize text-white/80">{option}</span>
+                <label key={option} className="cursor-pointer">
+                  <input type="radio" value={option} {...register('gender')} className="peer sr-only" />
+                  <div className="flex items-center justify-center rounded-2xl border border-white/10 bg-surface-2 px-4 py-3 text-sm text-white/80 transition-all duration-200 hover:border-brand-400 peer-checked:border-brand-400 peer-checked:bg-brand-500/15 peer-checked:text-white">
+                    {option}
+                  </div>
                 </label>
               ))}
             </div>
@@ -322,9 +325,11 @@ export function RegisterPage() {
                 { label: 'Yes', value: 'true' },
                 { label: 'No', value: 'false' },
               ].map((option) => (
-                <label key={option.value} className="flex items-center gap-2 px-3 py-2 rounded-2xl bg-surface-2 border border-white/10 cursor-pointer hover:border-brand-500">
-                  <input type="radio" value={option.value} {...register('collegeStudent')} className="hidden" />
-                  <span className="text-sm text-white/80">{option.label}</span>
+                <label key={option.value} className="cursor-pointer">
+                  <input type="radio" value={option.value} {...register('collegeStudent')} className="peer sr-only" />
+                  <div className="flex items-center justify-center rounded-2xl border border-white/10 bg-surface-2 px-4 py-3 text-sm text-white/80 transition-all duration-200 hover:border-brand-400 peer-checked:border-brand-400 peer-checked:bg-brand-500/15 peer-checked:text-white">
+                    {option.label}
+                  </div>
                 </label>
               ))}
             </div>
@@ -343,9 +348,11 @@ export function RegisterPage() {
                   { label: 'Yes', value: 'true' },
                   { label: 'No', value: 'false' },
                 ].map((option) => (
-                  <label key={option.value} className="flex items-center gap-2 px-3 py-2 rounded-2xl bg-surface-2 border border-white/10 cursor-pointer hover:border-brand-500">
-                    <input type="radio" value={option.value} {...register('isHosteller')} className="hidden" />
-                    <span className="text-sm text-white/80">{option.label}</span>
+                  <label key={option.value} className="cursor-pointer">
+                    <input type="radio" value={option.value} {...register('isHosteller')} className="peer sr-only" />
+                    <div className="flex items-center justify-center rounded-2xl border border-white/10 bg-surface-2 px-4 py-3 text-sm text-white/80 transition-all duration-200 hover:border-brand-400 peer-checked:border-brand-400 peer-checked:bg-brand-500/15 peer-checked:text-white">
+                      {option.label}
+                    </div>
                   </label>
                 ))}
               </div>
@@ -360,9 +367,11 @@ export function RegisterPage() {
                     { label: 'Yes', value: 'true' },
                     { label: 'No', value: 'false' },
                   ].map((option) => (
-                    <label key={option.value} className="flex items-center gap-2 px-3 py-2 rounded-2xl bg-surface-2 border border-white/10 cursor-pointer hover:border-brand-500">
-                      <input type="radio" value={option.value} {...register('onCampus')} className="hidden" />
-                      <span className="text-sm text-white/80">{option.label}</span>
+                    <label key={option.value} className="cursor-pointer">
+                      <input type="radio" value={option.value} {...register('onCampus')} className="peer sr-only" />
+                      <div className="flex items-center justify-center rounded-2xl border border-white/10 bg-surface-2 px-4 py-3 text-sm text-white/80 transition-all duration-200 hover:border-brand-400 peer-checked:border-brand-400 peer-checked:bg-brand-500/15 peer-checked:text-white">
+                        {option.label}
+                      </div>
                     </label>
                   ))}
                 </div>
