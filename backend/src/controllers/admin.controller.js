@@ -284,12 +284,32 @@ exports.sendWarning = async (req, res, next) => {
   user.warnings.push({ message, severity, issuedBy: req.user._id });
   await user.save({ validateBeforeSave: false });
 
-  await createNotification({
-    recipient: user._id,
-    type: 'account_warning',
-    title: '🔴 Warning Issued',
-    body: message,
-  });
+  // Persist notification to DB (guarantees it appears in user's notification list)
+  try {
+    await Notification.create({
+      recipient: user._id,
+      type: 'account_warning',
+      title: '🔴 Warning Issued',
+      body: message,
+      channel: 'in_app',
+      priority: 'high',
+    });
+  } catch (err) {
+    require('../utils/logger').error('Failed to create warning notification:', err);
+  }
+
+  // Emit real-time notification (best-effort)
+  try {
+    await createNotification({
+      recipient: user._id,
+      type: 'account_warning',
+      title: '🔴 Warning Issued',
+      body: message,
+    });
+  } catch (err) {
+    // createNotification already swallows errors, but guard here as well
+    require('../utils/logger').error('Failed to emit warning notification:', err);
+  }
 
   // Auto-suspend after 3 high-severity warnings
   const highSeverityCount = user.warnings.filter((w) => w.severity === 'high').length;
