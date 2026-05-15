@@ -17,6 +17,11 @@ const { sendEmail } = require('../services/email.service');
 const AppError = require('../utils/AppError');
 const { generateTokenPair } = require('../middleware/auth');
 
+const buildExactMatchRegex = (value) => {
+  const escaped = value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return { $regex: `^${escaped}$`, $options: 'i' };
+};
+
 // ── Create Distributor Account ────────────────────────────────
 exports.createDistributor = async (req, res, next) => {
   const { name, email, phone, password, zoneId, districtId } = req.body;
@@ -36,7 +41,7 @@ exports.createDistributor = async (req, res, next) => {
     if (!district) throw new AppError('District not found.', 404);
     districtName = district.name;
     if (!zoneId) {
-      assignedZone = await Zone.findOne({ isActive: true, districts: districtName });
+      assignedZone = await Zone.findOne({ isActive: true, districts: buildExactMatchRegex(districtName) });
       if (!assignedZone) throw new AppError('No active zone found for selected district.', 404);
     }
   }
@@ -108,7 +113,7 @@ exports.createDeliveryDude = async (req, res, next) => {
     localityName = locality.name;
     districtName = locality.district?.name;
     if (!zoneId) {
-      assignedZone = await Zone.findOne({ isActive: true, localities: localityName });
+      assignedZone = await Zone.findOne({ isActive: true, localities: buildExactMatchRegex(localityName) });
     }
   }
 
@@ -117,7 +122,7 @@ exports.createDeliveryDude = async (req, res, next) => {
     if (!district) throw new AppError('District not found.', 404);
     districtName = district.name;
     if (!zoneId) {
-      assignedZone = await Zone.findOne({ isActive: true, districts: districtName });
+      assignedZone = await Zone.findOne({ isActive: true, districts: buildExactMatchRegex(districtName) });
     }
   }
 
