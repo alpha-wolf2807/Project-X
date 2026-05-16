@@ -8,6 +8,7 @@ export default ({ mode }) => {
   const apiTarget = env.VITE_API_URL || 'https://CARTEX-j9go.onrender.com';
 
   return defineConfig({
+    base: env.BASE_URL || '/',
     plugins: [react()],
     resolve: {
     alias: {

@@ -21,11 +21,13 @@ const queryClient = new QueryClient({
   },
 });
 
+const baseUrl = import.meta.env.BASE_URL || '/';
+
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <HelmetProvider>
       <QueryClientProvider client={queryClient}>
-        <BrowserRouter>
+        <BrowserRouter basename={baseUrl}>
           <App />
           <Toaster
             position="top-right"
