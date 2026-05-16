@@ -107,47 +107,56 @@ export function AdminUsers() {
 
   const createDistribMutation = useMutation({
     mutationFn: adminApi.createDistributor,
-    onSuccess: (response) => { 
+    retry: false,
+    onSuccess: (response) => {
       queryClient.invalidateQueries(['admin-users']);
-      // Reset to page 1 and clear filters to see new user
-      setPage(1);
-      setRole('distributor');
       setSearch('');
-      toast.success(`✅ ${response.data.user.name} created as Distributor!`); 
-      setModalType(null); 
-      resetDistrib(); 
+      setRole('distributor');
+      setPage(1);
+      toast.success(`✅ ${response.data.user.name} created as Distributor!`);
+      setModalType(null);
+      resetDistrib();
     },
-    onError: (err) => toast.error(`❌ ${err.response?.data?.message || err.message}`),
+    onError: (err) => {
+      const message = err.message || err.response?.data?.message || 'Unable to create distributor.';
+      toast.error(`❌ ${message}`);
+    },
   });
 
   const createDelivMutation = useMutation({
     mutationFn: adminApi.createDeliveryDude,
-    onSuccess: (response) => { 
-      queryClient.invalidateQueries(['admin-users']); 
-      // Reset to page 1 and clear filters to see new user
-      setPage(1);
-      setRole('delivery');
+    retry: false,
+    onSuccess: (response) => {
+      queryClient.invalidateQueries(['admin-users']);
       setSearch('');
-      toast.success(`✅ ${response.data.user.name} created as Delivery Dude!`); 
-      setModalType(null); 
-      resetDeliv(); 
+      setRole('delivery');
+      setPage(1);
+      toast.success(`✅ ${response.data.user.name} created as Delivery Dude!`);
+      setModalType(null);
+      resetDeliv();
     },
-    onError: (err) => toast.error(`❌ ${err.response?.data?.message || err.message}`),
+    onError: (err) => {
+      const message = err.message || err.response?.data?.message || 'Unable to create delivery dude.';
+      toast.error(`❌ ${message}`);
+    },
   });
 
   const createSupportMutation = useMutation({
     mutationFn: adminApi.createSupport,
-    onSuccess: (response) => { 
-      queryClient.invalidateQueries(['admin-users']); 
-      // Reset to page 1 and clear filters to see new user
-      setPage(1);
-      setRole('support');
+    retry: false,
+    onSuccess: (response) => {
+      queryClient.invalidateQueries(['admin-users']);
       setSearch('');
-      toast.success(`✅ ${response.data.user.name} created as Support Agent!`); 
-      setModalType(null); 
-      resetSupport(); 
+      setRole('support');
+      setPage(1);
+      toast.success(`✅ ${response.data.user.name} created as Support Agent!`);
+      setModalType(null);
+      resetSupport();
     },
-    onError: (err) => toast.error(`❌ ${err.response?.data?.message || err.message}`),
+    onError: (err) => {
+      const message = err.message || err.response?.data?.message || 'Unable to create support agent.';
+      toast.error(`❌ ${message}`);
+    },
   });
 
   const roleBadge = { admin: 'purple', distributor: 'brand', delivery: 'info', customer: 'success', support: 'warning' };

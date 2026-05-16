@@ -5,7 +5,7 @@
  * Lazy loading for code splitting by portal.
  */
 
-import { Suspense, lazy, useEffect } from 'react';
+import { Suspense, lazy, useEffect, useState } from 'react';
 import { Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import { useAuthStore } from '@store/authStore';
 import { authApi } from '@services/api';
@@ -142,14 +142,51 @@ const SocketSetup = () => {
   return null;
 };
 
-// ── App ────────────────────────────────────────────────────────
+// ── Auth State Restoration ────────────────────────────────
+const AuthRestore = ({ children }) => {
+  const { isAuthenticated, accessToken, setAccessToken, setUser, logout } = useAuthStore();
+  const [isRestoring, setIsRestoring] = useState(true);
+
+  useEffect(() => {
+    const restoreAuth = async () => {
+      if (isAuthenticated && accessToken) {
+        setIsRestoring(false);
+        return;
+      }
+
+      try {
+        const tokenResponse = await authApi.refreshToken();
+        if (tokenResponse?.data?.accessToken) {
+          setAccessToken(tokenResponse.data.accessToken);
+        }
+
+        const meResponse = await authApi.getMe();
+        if (meResponse?.data?.user) {
+          setUser(meResponse.data.user);
+        }
+      } catch (err) {
+        logout();
+      } finally {
+        setIsRestoring(false);
+      }
+    };
+
+    restoreAuth();
+  }, [isAuthenticated, accessToken, setAccessToken, setUser, logout]);
+
+  if (isRestoring) return <GlobalLoader />;
+  return children;
+};
+
+// ── App ────────────────────────────────────────────────────
 export default function App() {
   return (
-    <>
-      <SocketSetup />
-      <NotificationDrawer />
-      <Suspense fallback={<GlobalLoader />}>
-        <Routes>
+    <AuthRestore>
+      <>
+        <SocketSetup />
+        <NotificationDrawer />
+        <Suspense fallback={<GlobalLoader />}>
+          <Routes>
           {/* ── Public Auth Routes ─────────────────────────── */}
           <Route element={<PublicRoute />}>
             <Route path="/auth/login" element={<LoginPage />} />
@@ -223,11 +260,12 @@ export default function App() {
             </Route>
           </Route>
 
-          {/* ── Fallback ───────────────────────────────────── */}
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </Suspense>
-    </>
+            {/* ── Fallback ───────────────────────────────────── */}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </Suspense>
+      </>
+    </AuthRestore>
   );
 }
 
