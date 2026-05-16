@@ -17,6 +17,8 @@ const xss = require('xss-clean');
 const hpp = require('hpp');
 const compression = require('compression');
 const rateLimit = require('express-rate-limit');
+const fs = require('fs');
+const path = require('path');
 
 const logger = require('./utils/logger');
 const { errorHandler, notFound } = require('./middleware/errorHandler');
@@ -42,6 +44,7 @@ const couponRoutes = require('./routes/coupon.routes');
 const categoryRoutes = require('./routes/category.routes');
 
 const app = express();
+app.set('trust proxy', 1);
 
 // ── Helmet Security ─────────────────────────────────────────
 app.use(
@@ -199,6 +202,17 @@ app.use(`${API}/districts`, districtRoutes);
 app.use(`${API}/localities`, localityRoutes);
 app.use(`${API}/coupons`, couponRoutes);
 app.use(`${API}/categories`, categoryRoutes);
+
+// ── Optional Frontend SPA Static Serve (if build exists) ─────
+const frontendDist = path.resolve(__dirname, '../../frontend/dist');
+if (fs.existsSync(frontendDist)) {
+  app.use(express.static(frontendDist));
+
+  app.get('*', (req, res, next) => {
+    if (req.originalUrl.startsWith(`${API}/`)) return next();
+    res.sendFile(path.join(frontendDist, 'index.html'));
+  });
+}
 
 // ── 404 Middleware ──────────────────────────────────────────
 app.use(notFound);
