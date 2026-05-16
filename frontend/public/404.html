@@ -14,6 +14,11 @@
       } else {
         sessionStorage.removeItem(key);
       }
+    <title>Redirecting…</title>
+    <meta http-equiv="refresh" content="0; url=/" />
+    <script>
+      // SPA fallback for static hosts that serve 404.html on deep links.
+      window.location.replace('/');
     </script>
   </head>
   <body></body>
