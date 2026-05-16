@@ -1,0 +1,20 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Loading…</title>
+    <script>
+      // Prevent infinite redirect loops on hosts with custom 404 handling.
+      const key = 'cartex_spa_404_redirected';
+      const alreadyRedirected = sessionStorage.getItem(key) === '1';
+
+      if (!alreadyRedirected) {
+        sessionStorage.setItem(key, '1');
+        window.location.replace('/');
+      } else {
+        sessionStorage.removeItem(key);
+      }
+    </script>
+  </head>
+  <body></body>
+</html>
