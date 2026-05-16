@@ -5,6 +5,26 @@
 
 ---
 
+## ✅ Latest Fix - "Not Found" Error Resolved
+
+**Issue**: Platform showed "Not Found" when reloading on any route after login.
+
+**Root Causes Fixed**:
+1. ✅ Frontend API URL was pointing to wrong backend
+2. ✅ Backend SPA serving logic improved for better fallback handling
+3. ✅ Frontend build regenerated with latest optimizations
+
+**What Changed**:
+- Updated `frontend/.env` to use `http://localhost:5000` for local dev
+- Enhanced `backend/src/app.js` with debug logging and better error handling
+- Rebuilt frontend dist with Vite (all bundles optimized)
+
+**See**: [VERIFICATION_GUIDE.md](./VERIFICATION_GUIDE.md) for detailed testing steps.
+
+**Quick Test**: After login, reload the page (Ctrl+F5) - it should work perfectly now!
+
+---
+
 ## 🚀 What is CARTEX?
 
 CARTEX solves a real problem: **hostellers cannot easily access snacks, groceries, and personal items** without leaving campus. Day scholars and distributors act as intermediaries to:

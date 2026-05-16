@@ -203,15 +203,37 @@ app.use(`${API}/localities`, localityRoutes);
 app.use(`${API}/coupons`, couponRoutes);
 app.use(`${API}/categories`, categoryRoutes);
 
-// ── Optional Frontend SPA Static Serve (if build exists) ─────
+// ── Frontend SPA Static Serve ──────────────────────────────
 const frontendDist = path.resolve(__dirname, '../../frontend/dist');
-if (fs.existsSync(frontendDist)) {
-  app.use(express.static(frontendDist));
+console.log(`Frontend dist path: ${frontendDist}`);
+console.log(`Frontend dist exists: ${fs.existsSync(frontendDist)}`);
 
+if (fs.existsSync(frontendDist)) {
+  // Serve static assets from dist folder
+  app.use(express.static(frontendDist, {
+    maxAge: '1d',
+    etag: false
+  }));
+
+  // SPA fallback: serve index.html for all non-API routes
   app.get('*', (req, res, next) => {
-    if (req.originalUrl.startsWith(`${API}/`)) return next();
-    res.sendFile(path.join(frontendDist, 'index.html'));
+    // Skip API routes and let them fall through to 404 handler
+    if (req.originalUrl.startsWith(`${API}/`)) {
+      return next();
+    }
+    
+    // Serve index.html for all other routes (client-side routing)
+    const indexPath = path.join(frontendDist, 'index.html');
+    res.sendFile(indexPath, (err) => {
+      if (err) {
+        logger.error(`Error serving index.html: ${err.message}`);
+        next(err);
+      }
+    });
   });
+} else {
+  logger.warn(`Frontend dist folder not found at ${frontendDist}`);
+  logger.warn('Frontend will not be served. Make sure to build the frontend with: npm run build');
 }
 
 // ── 404 Middleware ──────────────────────────────────────────
