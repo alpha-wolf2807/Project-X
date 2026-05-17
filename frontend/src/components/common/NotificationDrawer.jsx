@@ -10,15 +10,18 @@ export default function NotificationDrawer() {
   const { notifPanelOpen, closeNotifPanel } = useUIStore();
   const { notifications, unreadCount, setNotifications, setUnreadCount, markAllRead, markRead } = useNotifStore();
 
-  const { refetch, isFetching } = useQuery({
+  const { data, refetch, isFetching } = useQuery({
     queryKey: ['notifications'],
     queryFn: () => notificationsApi.getAll({ page: 1, limit: 50 }),
     enabled: false,
-    onSuccess: (data) => {
+  });
+
+  useEffect(() => {
+    if (data?.data) {
       setNotifications(data.data.notifications || []);
       setUnreadCount(data.data.unreadCount || 0);
-    },
-  });
+    }
+  }, [data, setNotifications, setUnreadCount]);
 
   useEffect(() => {
     if (notifPanelOpen) {
