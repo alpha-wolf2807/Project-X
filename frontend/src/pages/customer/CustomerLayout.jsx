@@ -425,6 +425,7 @@ const Navbar = () => {
 // ── Mobile Bottom Nav ──────────────────────────────────────────
 const MobileBottomNav = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const { toggleCart, totalItems } = useCart();
   const { isAuthenticated } = useAuthStore();
 
@@ -444,7 +445,7 @@ const MobileBottomNav = () => {
           return (
             <button
               key={label}
-              onClick={action || (() => { if (to) window.location.href = to; })}
+              onClick={action || (() => { if (to) navigate(to); })}
               className={cn('flex-1 flex flex-col items-center gap-1 py-3 transition-colors', isActive ? 'text-brand-500' : 'text-white/50')}
             >
               <div className="relative">
