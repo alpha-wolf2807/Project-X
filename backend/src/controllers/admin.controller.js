@@ -108,13 +108,13 @@ exports.createDistributor = async (req, res, next) => {
     await Zone.findByIdAndUpdate(assignedZone._id, { distributor: user._id });
   }
 
-  // Send welcome email with credentials
-  await sendEmail({
+  // Send welcome email with credentials in the background
+  sendEmail({
     to: email,
     subject: '🎉 You\'re now a CARTEX Distributor!',
     template: 'email_verify',
     data: { name, otp: 'Your account has been created. Use the password set by admin.' },
-  });
+  }).catch(err => require('../utils/logger').error('Failed to send distributor welcome email:', err));
 
   await AuditLog.create({
     action: 'user.distributor_created',
