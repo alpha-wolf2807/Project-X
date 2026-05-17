@@ -232,7 +232,7 @@ export function AdminUsers() {
                 <td className="text-white/50 text-xs whitespace-nowrap">{new Date(user.createdAt).toLocaleDateString('en-IN')}</td>
                 <td>
                   <div className="flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button onClick={() => { setSelectedUser(user); setModalType('warn'); }} className="w-8 h-8 rounded-lg bg-yellow-500/20 hover:bg-yellow-500/30 flex items-center justify-center text-yellow-400 transition-colors" title="Send warning">
+                    <button onClick={() => { setSelectedUser(user); setModalType('warn'); }} className="w-8 h-8 rounded-lg bg-red-500/20 hover:bg-red-500/30 flex items-center justify-center text-red-500 transition-colors" title="Send warning">
                       <AlertTriangle className="w-4 h-4" />
                     </button>
                     {user.suspension?.isSuspended ? (

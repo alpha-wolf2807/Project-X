@@ -342,30 +342,16 @@ exports.sendWarning = async (req, res, next) => {
   user.warnings.push({ message, severity, issuedBy: req.user._id });
   await user.save({ validateBeforeSave: false });
 
-  // Persist notification to DB (guarantees it appears in user's notification list)
-  try {
-    await Notification.create({
-      recipient: user._id,
-      type: 'account_warning',
-      title: '🔴 Warning Issued',
-      body: message,
-      channel: 'in_app',
-      priority: 'high',
-    });
-  } catch (err) {
-    require('../utils/logger').error('Failed to create warning notification:', err);
-  }
-
-  // Emit real-time notification (best-effort)
+  // Emit real-time notification and persist to DB
   try {
     await createNotification({
       recipient: user._id,
       type: 'account_warning',
       title: '🔴 Warning Issued',
       body: message,
+      channel: 'in_app'
     });
   } catch (err) {
-    // createNotification already swallows errors, but guard here as well
     require('../utils/logger').error('Failed to emit warning notification:', err);
   }
 
